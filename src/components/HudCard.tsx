@@ -17,7 +17,7 @@ export function HudCard({ code, title, en, actions, children, className, flush }
       <header className={styles.hudHead}>
         {code && <span className={styles.hudTag}>{code}</span>}
         <h2 className={styles.hudTitle}>
-          {title}
+          <span>{title}</span>
           {en && <b> / {en}</b>}
         </h2>
         {actions && <div className={styles.hudActions}>{actions}</div>}

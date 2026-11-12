@@ -1,0 +1,12 @@
+{
+  "loginCaptchaError": true,
+  "loginStayed": true,
+  "viewerNoExport": true,
+  "viewerReadOnlyBadge": true,
+  "viewerNoConsoleNav": true,
+  "heatMode": true,
+  "replayActive": true,
+  "arcDrawer": true,
+  "nodeFilter": true,
+  "errors": []
+}

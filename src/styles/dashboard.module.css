@@ -1,0 +1,688 @@
+.page {
+  position: relative;
+  height: 100%;
+  padding: 10px 16px 8px;
+  display: grid;
+  grid-template-columns: 410px 932px 522px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.leftCol {
+  display: grid;
+  grid-template-rows: 286px 262px minmax(0, 1fr);
+  gap: 12px;
+  min-height: 0;
+}
+
+.centerCol {
+  display: grid;
+  grid-template-rows: 384px minmax(0, 1fr) 210px;
+  gap: 12px;
+  min-height: 0;
+}
+
+.rightCol {
+  display: grid;
+  grid-template-rows: 372px 306px minmax(0, 1fr);
+  gap: 12px;
+  min-height: 0;
+}
+
+/* ---------------- KPI ---------------- */
+.kpiGrid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.kpiCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 9px;
+  border: 1px solid rgba(var(--accent-rgb), 0.1);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.06), rgba(5, 9, 18, 0.25));
+  text-align: left;
+  min-width: 0;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  clip-path: polygon(0 6px, 6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+}
+
+.kpiCard:hover {
+  border-color: rgba(var(--accent-rgb), 0.32);
+  box-shadow: inset 0 0 22px rgba(var(--accent-rgb), 0.08);
+}
+
+.kpiCardActive {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  box-shadow: inset 0 0 24px rgba(var(--accent-rgb), 0.14), 0 0 10px rgba(var(--accent-rgb), 0.12);
+}
+
+.kpiCardActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.kpiTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.kpiLabel {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.kpiCode {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+.kpiValue {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 25px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+  text-shadow: 0 0 16px rgba(var(--accent-rgb), 0.22);
+  white-space: nowrap;
+}
+
+.kpiUnit {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+}
+
+.kpiFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.kpiDelta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.kpiDeltaGood {
+  color: var(--accent);
+}
+
+.kpiDeltaBad {
+  color: var(--amber);
+}
+
+.kpiDeltaFlat {
+  color: var(--text-3);
+}
+
+.kpiMeta {
+  color: var(--text-3);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------------- 主图 ---------------- */
+.chartLegend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.legendChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+
+.legendChip:hover {
+  color: var(--text-1);
+}
+
+.legendChipOff {
+  opacity: 0.35;
+}
+
+.legendDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.chartBox {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chartCanvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------------- 简化地图 ---------------- */
+.miniWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.miniSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.miniArc {
+  stroke-dasharray: 4 6;
+  animation: nxDash 2.2s linear infinite;
+}
+
+@keyframes nxDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.miniNode {
+  cursor: pointer;
+}
+
+.miniNodeRing {
+  animation: nxPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes nxPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.miniStats {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  display: flex;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.miniStat b {
+  color: var(--text-1);
+  margin-left: 3px;
+}
+
+.miniOpen {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5);
+}
+
+.miniTip {
+  position: absolute;
+  z-index: 4;
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  background: rgba(6, 11, 20, 0.96);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+}
+
+.miniTipName {
+  font-size: 12px;
+  color: var(--text-1);
+}
+
+.miniTipSub {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.miniTipValue {
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* ---------------- 资产占比 ---------------- */
+.assetBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 46% minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+}
+
+.donutBox {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.donutCenter {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.donutValue {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--text-1);
+  text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.3);
+}
+
+.donutLabel {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+.assetLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.assetRow {
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 2px;
+  border: 1px solid transparent;
+  text-align: left;
+  transition: opacity 0.18s ease, border-color 0.18s ease;
+}
+
+.assetRow:hover {
+  border-color: var(--line-soft);
+}
+
+.assetRowOff {
+  opacity: 0.32;
+}
+
+.assetName {
+  font-size: 10px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assetPct {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-1);
+}
+
+/* ---------------- 地区排行 ---------------- */
+.regionChart {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+/* ---------------- 深度 ---------------- */
+.depthMeta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+  padding: 2px 4px 6px;
+  flex: 0 0 auto;
+}
+
+.depthMeta b {
+  color: var(--text-2);
+  font-weight: 400;
+}
+
+.depthChart {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+/* ---------------- 雷达 ---------------- */
+.healthBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 52% minmax(0, 1fr);
+  gap: 4px;
+}
+
+.radarBox {
+  position: relative;
+  min-height: 0;
+}
+
+.healthList {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.healthRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid var(--line-soft);
+  font-size: 10px;
+}
+
+.healthName {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+
+.healthScore {
+  font-family: var(--font-mono);
+  color: var(--text-1);
+}
+
+/* ---------------- 实时流水 ---------------- */
+.tapeBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tapeHead {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 84px 62px;
+  gap: 6px;
+  padding: 6px 10px 5px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--line-soft);
+  flex: 0 0 auto;
+}
+
+.tapeRow {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 84px 62px;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.05);
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.tapeRowNew {
+  animation: nxTapeIn 0.45s ease-out;
+}
+
+@keyframes nxTapeIn {
+  from {
+    background: rgba(0, 240, 255, 0.16);
+    transform: translateY(-3px);
+    opacity: 0.4;
+  }
+  to {
+    background: transparent;
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tapeRow:hover {
+  background: rgba(var(--accent-rgb), 0.06);
+}
+
+.tapeTime {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.tapeAsset {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tapeAsset b {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-1);
+  font-weight: 500;
+}
+
+.tapeRoute {
+  font-size: 9px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tapeAmount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  color: var(--text-1);
+}
+
+.tapeStatus {
+  text-align: right;
+}
+
+/* ---------------- 告警 ---------------- */
+.alertBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.alertRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.06);
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.alertRow:hover {
+  background: rgba(var(--accent-rgb), 0.05);
+}
+
+.alertBar {
+  align-self: stretch;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0.75;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.alertWarn .alertBar {
+  background: var(--amber);
+}
+
+.alertCritical .alertBar {
+  background: var(--red);
+  animation: nxBlink 1.6s ease-in-out infinite;
+}
+
+@keyframes nxBlink {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.alertCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.alertCopy b {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alertCopy span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alertTime {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.alertHandled {
+  opacity: 0.5;
+}
+
+.alertHandleBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  height: 18px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--accent);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: rgba(5, 9, 18, 0.8);
+}
+
+.alertRow:hover .alertHandleBtn {
+  display: inline-flex;
+  align-items: center;
+}
+
+.alertFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px 0;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  flex: 0 0 auto;
+}
+
+/* ---------------- 选择器 ---------------- */
+.assetSelect {
+  height: 22px;
+  padding: 0 22px 0 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-1);
+  border: 1px solid var(--line-soft);
+  background-color: rgba(5, 9, 18, 0.8);
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%),
+    linear-gradient(135deg, var(--text-2) 50%, transparent 50%);
+  background-position: calc(100% - 11px) 9px, calc(100% - 7px) 9px;
+  background-size: 4px 4px;
+  background-repeat: no-repeat;
+  appearance: none;
+  max-width: 120px;
+}
+
+.assetSelect option {
+  background: #0a0f1c;
+}

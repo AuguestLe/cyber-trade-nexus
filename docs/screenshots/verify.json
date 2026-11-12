@@ -1,0 +1,41 @@
+{
+  "login": {
+    "title": "NEXUS · 全球交易态势大屏",
+    "hasForm": true
+  },
+  "dashboard": {
+    "connection": true,
+    "hasKpi": true,
+    "demoMark": true
+  },
+  "hotkeyMap": "/map",
+  "map": {
+    "hasCanvas": true,
+    "hasFilters": true,
+    "nodesLoaded": true
+  },
+  "mapSearch": true,
+  "trades": {
+    "rowExists": true,
+    "totalVisible": true
+  },
+  "admin": {
+    "access": true,
+    "themeApplied": "cyan"
+  },
+  "adminTheme": "amber",
+  "viewer403": true,
+  "errors": [],
+  "pages": [
+    "login",
+    "dashboard",
+    "hotkeyMap",
+    "map",
+    "mapSearch",
+    "trades",
+    "admin",
+    "adminTheme",
+    "viewer403",
+    "errors"
+  ]
+}

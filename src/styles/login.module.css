@@ -1,0 +1,543 @@
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 64px minmax(0, 1fr) 48px;
+  overflow: hidden;
+  background:
+    radial-gradient(900px 600px at 30% 45%, rgba(0, 240, 255, 0.07), transparent 65%),
+    radial-gradient(800px 700px at 85% 20%, rgba(255, 43, 214, 0.05), transparent 60%),
+    #05070d;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at 45% 50%, rgba(0, 0, 0, 0.9), transparent 80%);
+  pointer-events: none;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 8, 15, 0.8);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoMark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.02));
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8);
+}
+
+.brandName {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-1);
+}
+
+.brandSub {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.24em;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+.demoBadge {
+  margin-left: 8px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 181, 71, 0.4);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.guestBadge {
+  padding: 4px 10px;
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.headerClock {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 560px;
+  gap: 60px;
+  padding: 50px 90px 40px 110px;
+  min-height: 0;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.heroKicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.heroTitle {
+  margin-top: 16px;
+  font-size: 56px;
+  line-height: 1.08;
+  letter-spacing: 0.08em;
+  color: var(--text-1);
+  text-shadow: 0 0 34px rgba(var(--accent-rgb), 0.25);
+}
+
+.heroTitle span {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  color: var(--text-3);
+}
+
+.heroDesc {
+  margin-top: 20px;
+  max-width: 720px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 30px;
+  max-width: 720px;
+}
+
+.stat {
+  padding: 10px 12px;
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid rgba(var(--accent-rgb), 0.45);
+  background: rgba(10, 16, 29, 0.45);
+}
+
+.statLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.stat b {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-1);
+  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
+}
+
+.worldDecor {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 120px;
+  margin-top: 26px;
+  opacity: 0.75;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.worldDecor svg {
+  width: 100%;
+  height: 100%;
+}
+
+.decorPulse {
+  animation: loginPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes loginPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+}
+
+.authPanel {
+  align-self: center;
+  position: relative;
+  width: 560px;
+  padding: 28px 32px 26px;
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
+  background:
+    linear-gradient(180deg, rgba(13, 20, 36, 0.96), rgba(6, 10, 19, 0.98));
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(var(--accent-rgb), 0.04);
+  clip-path: polygon(
+    0 18px,
+    18px 0,
+    calc(100% - 30px) 0,
+    100% 30px,
+    100% calc(100% - 18px),
+    calc(100% - 18px) 100%,
+    30px 100%,
+    0 calc(100% - 30px)
+  );
+}
+
+.authPanel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.7;
+}
+
+.panelCode {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.panelTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.panelIcon {
+  color: var(--accent);
+}
+
+.panelTitle {
+  font-size: 24px;
+  letter-spacing: 0.1em;
+}
+
+.panelDesc {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-3);
+}
+
+.form {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+
+.labelHint {
+  color: var(--text-3);
+  font-size: 8px;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 11px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 34px;
+  border: 1px solid var(--line);
+  background: rgba(4, 8, 16, 0.8);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.input::placeholder {
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(var(--accent-rgb), 0.6);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.15), inset 0 0 18px rgba(var(--accent-rgb), 0.05);
+}
+
+.inputAction {
+  position: absolute;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+}
+
+.inputAction:hover {
+  color: var(--accent);
+}
+
+.captchaRow {
+  display: flex;
+  gap: 10px;
+}
+
+.captchaRow .input {
+  padding-left: 12px;
+  flex: 1;
+}
+
+.captcha {
+  position: relative;
+  flex: 0 0 116px;
+  height: 40px;
+  border: 1px solid var(--line);
+  background: rgba(4, 8, 16, 0.8);
+  overflow: hidden;
+}
+
+.captcha canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.captchaRefresh {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  color: var(--accent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember input {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: rgba(5, 9, 18, 0.8);
+  position: relative;
+  cursor: pointer;
+}
+
+.remember input:checked {
+  background: rgba(var(--accent-rgb), 0.2);
+  box-shadow: inset 0 0 6px rgba(var(--accent-rgb), 0.4);
+}
+
+.remember input:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 4px;
+  height: 7px;
+  border-right: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(40deg);
+}
+
+.optionHint {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+
+.error {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 77, 109, 0.4);
+  border-left: 2px solid var(--red);
+  background: rgba(255, 77, 109, 0.06);
+  color: #ffc3cd;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+.submit {
+  width: 100%;
+  height: 44px;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.demoBlock {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.demoLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.demoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.demoButton {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-soft);
+  background: rgba(5, 9, 18, 0.4);
+  text-align: left;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.demoButton:hover {
+  border-color: rgba(var(--accent-rgb), 0.4);
+  background: rgba(var(--accent-rgb), 0.05);
+}
+
+.demoRole {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.demoName {
+  font-size: 11px;
+  color: var(--text-1);
+}
+
+.demoAccount {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.securityNote {
+  margin-top: 14px;
+  font-size: 9px;
+  line-height: 1.8;
+  color: var(--text-3);
+  letter-spacing: 0.03em;
+}
+
+.footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  border-top: 1px solid var(--line-soft);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}

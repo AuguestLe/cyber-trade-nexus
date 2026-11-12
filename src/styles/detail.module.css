@@ -1,0 +1,215 @@
+.hero {
+  position: relative;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line-soft);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.08), transparent 60%);
+  margin-bottom: 14px;
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.heroAmount {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+  text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.25);
+}
+
+.heroSub {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-2);
+}
+
+.heroRight {
+  text-align: right;
+}
+
+.heroPrice {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.heroPriceLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+}
+
+.route {
+  display: grid;
+  grid-template-columns: 1fr 46px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  margin-bottom: 14px;
+}
+
+.routeLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+
+.routeName {
+  font-size: 13px;
+  color: var(--text-1);
+  letter-spacing: 0.04em;
+}
+
+.routeId {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.routeArrow {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.routeArrow::after {
+  content: '→';
+  position: absolute;
+  top: -9px;
+  right: -4px;
+  color: var(--accent);
+  font-size: 12px;
+  text-shadow: 0 0 8px var(--accent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line-soft);
+  border-left: 1px solid var(--line-soft);
+}
+
+.cell {
+  padding: 10px 12px;
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  min-width: 0;
+}
+
+.cellLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+.cellValue {
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-1);
+  word-break: break-all;
+}
+
+.riskBlock {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+}
+
+.riskHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+
+.riskTrack {
+  position: relative;
+  height: 6px;
+  background: rgba(var(--accent-rgb), 0.08);
+  border: 1px solid var(--line-soft);
+}
+
+.riskFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--amber) 55%, var(--red));
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.3);
+  transition: width 0.3s ease;
+}
+
+.riskScale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-3);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.sectionTitle::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-soft);
+}
+
+.nodeHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.nodeOrb {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.2), transparent 70%);
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+}
+
+.nodeName {
+  font-size: 17px;
+  color: var(--text-1);
+}
+
+.nodeMeta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}

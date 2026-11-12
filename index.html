@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="cyan" data-motion="full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>NEXUS · 全球交易态势大屏</title>
+    <meta name="description" content="NEXUS 全球交易态势大屏演示系统（模拟数据，非真实交易）" />
+    <style>
+      html, body { margin: 0; background: #05070d; color: #e6f5ff; }
+      #root { min-height: 100vh; }
+      #boot-screen {
+        position: fixed; inset: 0; display: grid; place-items: center;
+        font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.24em;
+        color: #00f0ff; background: radial-gradient(circle at 50% 40%, #0a1622 0%, #05070d 60%);
+      }
+      #boot-screen span { animation: bootPulse 1.4s ease-in-out infinite; }
+      @keyframes bootPulse { 0%, 100% { opacity: 0.45 } 50% { opacity: 1 } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="boot-screen"><span>NEXUS // INITIALIZING</span></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080,initial-scale=1">
+<title>NEXUS · 全球交易态势总览</title>
+<style>
+:root{
+  --bg0:#05070D; --bg1:#0A0F1C; --bg2:#101A2E;
+  --cyan:#00F0FF; --magenta:#FF2BD6; --violet:#7B5CFF;
+  --amber:#FFB547; --red:#FF4D6D; --green:#39FF9E;
+  --text:#E6F5FF; --muted:#8AA3C0; --dim:#4B6480;
+  --line:rgba(0,240,255,.20); --line-soft:rgba(0,240,255,.08);
+  --panel:rgba(10,15,28,.88); --panel2:rgba(16,26,46,.72);
+  --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;margin:0;background:var(--bg0)}
+body{font-family:var(--sans);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+.app{position:relative;width:1920px;height:1080px;overflow:hidden;background:
+  radial-gradient(ellipse at 50% 32%,rgba(0,240,255,.055),transparent 42%),
+  radial-gradient(ellipse at 88% 70%,rgba(123,92,255,.06),transparent 33%),
+  linear-gradient(180deg,var(--bg0),#070B14 45%,var(--bg0));
+}
+.app::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;background:
+  linear-gradient(rgba(0,240,255,.08) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(90deg,rgba(0,240,255,.08) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(rgba(0,240,255,.025) 1px,transparent 1px) 0 0/12px 12px,
+  linear-gradient(90deg,rgba(0,240,255,.025) 1px,transparent 1px) 0 0/12px 12px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 95%)}
+.app::after{content:"";position:absolute;inset:0;pointer-events:none;background:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px),
+  radial-gradient(ellipse at center,transparent 56%,rgba(0,0,0,.38) 100%);
+  mix-blend-mode:screen;opacity:.36}
+.topbar{height:64px;position:relative;z-index:10;display:flex;align-items:stretch;border-bottom:1px solid rgba(0,240,255,.25);background:linear-gradient(90deg,rgba(10,15,28,.98),rgba(8,12,22,.92),rgba(10,15,28,.98));box-shadow:0 8px 28px rgba(0,0,0,.42),0 1px 0 rgba(0,240,255,.14) inset}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan) 18%,rgba(0,240,255,.22) 62%,var(--magenta) 88%,transparent);opacity:.55}
+.brand-zone{width:336px;display:flex;align-items:center;gap:13px;padding:0 20px}
+.brand-sigil{width:32px;height:32px;position:relative;flex:none}
+.brand-sigil::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,240,255,.9),rgba(123,92,255,.1));clip-path:polygon(50% 0,92% 24%,92% 76%,50% 100%,8% 76%,8% 24%);box-shadow:0 0 18px rgba(0,240,255,.5)}
+.brand-sigil::after{content:"N";position:absolute;inset:3px;display:grid;place-items:center;background:var(--bg1);clip-path:polygon(50% 0,92% 24%,92% 76%,50% 100%,8% 76%,8% 24%);font-family:var(--mono);font-weight:800;font-size:20px;color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+.brand-word{font-family:var(--mono);font-size:21px;font-weight:800;letter-spacing:.16em;line-height:1;text-shadow:0 0 18px rgba(0,240,255,.35)}
+.brand-sub{margin-top:5px;color:var(--muted);font-family:var(--mono);font-size:8px;letter-spacing:.19em;text-transform:uppercase}
+.brand-zone .demo{border:1px solid rgba(255,181,71,.45);color:var(--amber);padding:4px 7px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;background:rgba(255,181,71,.06);white-space:nowrap;margin-left:2px}
+.nav{display:flex;align-items:stretch;gap:2px;margin-left:6px}
+.nav a{position:relative;display:flex;align-items:center;padding:0 18px;color:var(--muted);font-size:12px;letter-spacing:.05em;transition:.18s}
+.nav a span{font-family:var(--mono);font-size:8px;color:var(--dim);margin-right:6px}
+.nav a:hover{color:var(--text);background:rgba(0,240,255,.04)}
+.nav a.active{color:var(--text);background:linear-gradient(180deg,rgba(0,240,255,.10),rgba(0,240,255,.01));text-shadow:0 0 12px rgba(0,240,255,.44)}
+.nav a.active::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.top-meta{margin-left:auto;display:flex;align-items:center;gap:14px;padding-right:16px}
+.stream-state{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.07em}
+.stream-state i{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 10px var(--green);animation:pulse 1.8s infinite}
+.clock{font-family:var(--mono);font-size:11px;color:var(--text);letter-spacing:.06em;min-width:156px;text-align:right}
+.clock small{display:block;color:var(--dim);font-size:8px;letter-spacing:.12em;margin-top:2px}
+.identity{height:40px;min-width:188px;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid rgba(0,240,255,.20);background:rgba(0,240,255,.035);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);cursor:pointer}
+.avatar{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--cyan);background:radial-gradient(circle,#153249,#08111e);font:700 10px var(--mono);color:var(--cyan);box-shadow:0 0 10px rgba(0,240,255,.2)}
+.identity b{display:block;font-size:11px;font-weight:600}.identity span{display:block;font-family:var(--mono);color:var(--dim);font-size:8px;margin-top:2px}
+.chev{margin-left:auto;color:var(--dim);font-size:12px}
+.dash-grid{height:calc(100% - 120px);padding:10px 14px;display:grid;grid-template-columns:22fr 50fr 28fr;gap:12px;position:relative;z-index:2}
+.col{min-width:0;display:flex;flex-direction:column;gap:12px}
+.hud{position:relative;min-height:0;background:linear-gradient(135deg,rgba(16,26,46,.84),rgba(8,13,25,.93));box-shadow:inset 0 0 0 1px rgba(0,240,255,.17),inset 0 1px 0 rgba(230,245,255,.04),0 8px 30px rgba(0,0,0,.24);clip-path:polygon(0 10px,10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px));overflow:hidden}
+.hud::before{content:"";position:absolute;inset:5px;pointer-events:none;z-index:2;background:
+  linear-gradient(var(--cyan),var(--cyan)) left top/14px 1px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) left top/1px 14px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) right top/14px 1px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) right top/1px 14px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) left bottom/14px 1px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) left bottom/1px 14px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) right bottom/14px 1px no-repeat,
+  linear-gradient(var(--cyan),var(--cyan)) right bottom/1px 14px no-repeat;opacity:.42}
+.hud::after{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.32}
+.ph{height:37px;display:flex;align-items:center;padding:0 13px;border-bottom:1px solid rgba(0,240,255,.1);background:linear-gradient(90deg,rgba(0,240,255,.035),transparent 68%)}
+.ph-title{font-family:var(--mono);font-size:10px;letter-spacing:.10em;color:var(--muted);white-space:nowrap}
+.ph-title b{color:var(--text);font-weight:600;margin-left:6px}
+.tag{font-family:var(--mono);font-size:8px;letter-spacing:.08em;color:var(--cyan);margin-right:9px;padding:3px 5px;border-left:2px solid var(--cyan);background:rgba(0,240,255,.055);white-space:nowrap}
+.ph-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.mini-tab{font-family:var(--mono);font-size:8px;padding:4px 7px;border:1px solid rgba(0,240,255,.14);color:var(--dim);background:rgba(0,240,255,.02);cursor:pointer}
+.mini-tab.on{border-color:rgba(0,240,255,.48);color:var(--cyan);background:rgba(0,240,255,.08);box-shadow:inset 0 0 8px rgba(0,240,255,.06)}
+.pulse-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.kpi-module{height:332px;flex:0 0 332px}
+.kpi-grid{height:calc(100% - 37px);padding:8px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:7px}
+.kpi{position:relative;padding:10px 11px;background:linear-gradient(135deg,rgba(16,26,46,.92),rgba(8,13,25,.92));border:1px solid rgba(0,240,255,.12);clip-path:polygon(0 7px,7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%) ;overflow:hidden;cursor:pointer}
+.kpi:hover{border-color:rgba(0,240,255,.4);background:linear-gradient(135deg,rgba(0,240,255,.08),rgba(8,13,25,.96))}
+.kpi::after{content:"";position:absolute;right:7px;top:7px;width:32px;height:1px;background:var(--cyan);opacity:.35}
+.kpi:nth-child(2)::after,.kpi:nth-child(5)::after{background:var(--magenta)}.kpi:nth-child(3)::after,.kpi:nth-child(6)::after{background:var(--amber)}
+.kpi-label{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:10px;letter-spacing:.04em}
+.kpi-code{font-family:var(--mono);font-size:8px;color:var(--dim)}
+.kpi-value{font-family:var(--mono);font-size:24px;line-height:1;font-weight:700;letter-spacing:-.03em;margin-top:9px;color:var(--text);text-shadow:0 0 14px rgba(0,240,255,.26)}
+.kpi-value .unit{font-size:11px;color:var(--cyan);margin-left:3px}
+.kpi-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;font-family:var(--mono);font-size:8px;color:var(--dim)}
+.up{color:var(--red)}.down{color:var(--green)}.cyan{color:var(--cyan)}.magenta{color:var(--magenta)}.amber{color:var(--amber)}
+.kpi-spark{height:12px;width:55px;opacity:.65}.kpi-spark polyline{stroke:var(--cyan);fill:none;stroke-width:1.2}
+.kpi:nth-child(2) .kpi-spark polyline{stroke:var(--magenta)}.kpi:nth-child(3) .kpi-spark polyline{stroke:var(--amber)}
+.asset-module{height:238px;flex:0 0 238px}
+.asset-body{height:calc(100% - 37px);padding:10px 13px;display:grid;grid-template-columns:142px 1fr;gap:12px;align-items:center}
+.donut-wrap{position:relative;width:132px;height:132px;margin:auto}
+.donut{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--cyan) 0 34%,var(--magenta) 34% 62%,var(--amber) 62% 84%,var(--violet) 84% 95%,var(--dim) 95% 100%);box-shadow:0 0 20px rgba(0,240,255,.12)}
+.donut::before{content:"";position:absolute;inset:13px;border-radius:50%;background:radial-gradient(circle,#0b1425 0 58%,var(--bg1) 100%);border:1px solid rgba(0,240,255,.22)}
+.donut::after{content:"$48.62B";position:absolute;inset:0;display:grid;place-items:center;font:700 17px var(--mono);color:var(--text);text-shadow:0 0 12px rgba(0,240,255,.35);transform:translateY(-6px)}
+.donut-label{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:8px;color:var(--dim);transform:translateY(16px)}
+.legend-list{display:flex;flex-direction:column;gap:10px}
+.legend-row{display:grid;grid-template-columns:9px 1fr auto;gap:7px;align-items:center}
+.legend-row i{width:6px;height:6px;border-radius:50%;box-shadow:0 0 8px currentColor}
+.legend-row span{color:var(--muted);font-size:10px}.legend-row b{font:600 10px var(--mono);color:var(--text)}
+.region-module{height:268px;flex:0 0 268px}
+.region-body{padding:8px 13px 9px;display:flex;flex-direction:column;gap:6px}
+.region-row{display:grid;grid-template-columns:20px 70px 1fr 47px;gap:7px;align-items:center;height:22px;cursor:pointer}
+.region-row .rank{font:8px var(--mono);color:var(--dim)}
+.region-row .name{font-size:10px;color:var(--muted);white-space:nowrap}
+.region-bar{height:5px;background:rgba(0,240,255,.06);position:relative;overflow:hidden}
+.region-bar i{display:block;height:100%;background:linear-gradient(90deg,rgba(0,240,255,.3),var(--cyan));box-shadow:0 0 9px rgba(0,240,255,.36)}
+.region-row:nth-child(2) .region-bar i{background:linear-gradient(90deg,rgba(255,43,214,.25),var(--magenta));box-shadow:0 0 9px rgba(255,43,214,.3)}
+.region-row .value{font:9px var(--mono);color:var(--muted);text-align:right}
+.chart-module{height:294px;flex:0 0 294px}
+.chart-body{height:calc(100% - 37px);padding:8px 12px 7px;position:relative}
+.chart-svg{width:100%;height:184px;display:block}
+.chart-meta{height:39px;display:flex;align-items:center;gap:18px;padding:0 4px;border-top:1px solid rgba(0,240,255,.07);margin-top:2px}
+.chart-meta .item{display:flex;flex-direction:column;gap:2px}.chart-meta small{font:8px var(--mono);color:var(--dim);letter-spacing:.08em}.chart-meta b{font:11px var(--mono);color:var(--text)}
+.chart-meta .sep{width:1px;height:21px;background:rgba(0,240,255,.1)}
+.chart-legend{display:flex;gap:9px}.lg{font:8px var(--mono);color:var(--muted);display:flex;align-items:center;gap:4px}.lg i{width:12px;height:2px;background:var(--cyan);box-shadow:0 0 7px currentColor}.lg:nth-child(2) i{background:var(--magenta)}.lg:nth-child(3) i{background:var(--amber)}.lg:nth-child(4) i{background:var(--violet)}
+.chart-tip{position:absolute;right:52px;top:16px;width:112px;padding:8px 9px;background:rgba(5,7,13,.92);border:1px solid rgba(0,240,255,.32);box-shadow:0 0 18px rgba(0,240,255,.08);clip-path:polygon(0 5px,5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%)}
+.chart-tip small{display:block;font:8px var(--mono);color:var(--dim);margin-bottom:5px}.chart-tip b{font:11px var(--mono);color:var(--cyan)}.chart-tip span{display:block;font:8px var(--mono);color:var(--muted);margin-top:3px}
+.map-module{height:390px;flex:0 0 390px}
+.map-body{height:calc(100% - 37px);position:relative;padding:7px 10px 8px;overflow:hidden}
+.world-svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 10px rgba(0,240,255,.08))}
+.land{fill:#0C192D;stroke:#2A6680;stroke-width:1.1;opacity:.95}
+.land-inner{fill:none;stroke:rgba(0,240,255,.12);stroke-width:.6}
+.route{fill:none;stroke-width:1;opacity:.75}.route.cyan-line{stroke:var(--cyan)}.route.magenta-line{stroke:var(--magenta)}.route.amber-line{stroke:var(--amber)}
+.map-node{filter:drop-shadow(0 0 7px currentColor);cursor:pointer}.map-node circle.core{fill:currentColor}.map-node circle.ring{fill:none;stroke:currentColor;opacity:.35}.map-node text{font:7px var(--mono);fill:var(--muted);letter-spacing:.04em}
+.map-stat{position:absolute;left:18px;top:14px;display:flex;gap:7px}.map-chip{font:8px var(--mono);padding:4px 7px;background:rgba(5,7,13,.7);border:1px solid rgba(0,240,255,.16);color:var(--muted)}.map-chip b{color:var(--cyan);font-weight:600}
+.map-open{position:absolute;right:16px;bottom:12px;font:8px var(--mono);letter-spacing:.07em;color:var(--cyan);padding:6px 9px;border:1px solid rgba(0,240,255,.22);background:rgba(0,240,255,.05);cursor:pointer}
+.depth-module{height:205px;flex:1}
+.depth-body{height:calc(100% - 37px);padding:9px 13px}
+.depth-head{display:flex;justify-content:space-between;font:8px var(--mono);color:var(--dim);margin-bottom:6px}.depth-head b:nth-child(2){color:var(--amber)}
+.depth-row{display:grid;grid-template-columns:74px 1fr;gap:7px;align-items:center;height:22px;position:relative}
+.depth-row .px{font:9px var(--mono);color:var(--muted)}.depth-row.sell .px{color:var(--amber)}
+.depth-track{height:8px;background:rgba(0,240,255,.035);display:flex}.depth-track i{height:100%;display:block}.depth-row.buy .depth-track{justify-content:flex-start}.depth-row.sell .depth-track{justify-content:flex-end}.depth-row.buy .depth-track i{background:linear-gradient(90deg,rgba(0,240,255,.08),rgba(0,240,255,.5));box-shadow:0 0 7px rgba(0,240,255,.2)}.depth-row.sell .depth-track i{background:linear-gradient(90deg,rgba(255,181,71,.5),rgba(255,181,71,.08));box-shadow:0 0 7px rgba(255,181,71,.18)}
+.depth-mid{height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:3px 0 4px;opacity:.4}
+.stream-module{height:352px;flex:0 0 352px}
+.stream-body{height:calc(100% - 37px);padding:2px 9px 7px}
+.stream-head,.stream-row{display:grid;grid-template-columns:52px 1fr 72px 66px;gap:7px;align-items:center}
+.stream-head{height:26px;border-bottom:1px solid rgba(0,240,255,.10);font:8px var(--mono);color:var(--dim)}
+.stream-row{height:38px;border-bottom:1px solid rgba(0,240,255,.045);position:relative;cursor:pointer}
+.stream-row:hover{background:rgba(0,240,255,.035)}.stream-row.selected{background:linear-gradient(90deg,rgba(0,240,255,.09),transparent);box-shadow:inset 2px 0 0 var(--cyan)}
+.stream-time{font:8px var(--mono);color:var(--dim)}.stream-asset{font:10px var(--mono);color:var(--text)}.stream-asset small{display:block;font:7px var(--mono);color:var(--dim);margin-top:2px}.stream-amt{font:9px var(--mono);color:var(--muted);text-align:right}.stream-status{justify-self:end}
+.state{font:7px var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:3px 5px;border:1px solid currentColor;background:rgba(255,255,255,.025)}
+.state.filled{color:var(--green)}.state.pending{color:var(--amber)}.state.failed{color:var(--red)}.state.flagged{color:var(--magenta)}
+.alerts-module{height:306px;flex:0 0 306px}
+.alert-body{height:calc(100% - 37px);padding:7px 9px}
+.alert-row{display:grid;grid-template-columns:4px 1fr auto;gap:9px;align-items:center;height:41px;padding:0 7px 0 0;border-bottom:1px solid rgba(0,240,255,.05);position:relative}
+.alert-row .bar{width:2px;height:24px;background:var(--amber);box-shadow:0 0 8px currentColor}.alert-row.critical .bar{background:var(--red)}.alert-row.info .bar{background:var(--cyan)}
+.alert-copy b{display:block;font-size:10px;font-weight:500;color:var(--text)}.alert-copy span{display:block;font:8px var(--mono);color:var(--dim);margin-top:3px}.alert-time{font:8px var(--mono);color:var(--dim);align-self:start;padding-top:9px}
+.alerts-foot{height:25px;border-top:1px solid rgba(255,77,109,.12);display:flex;justify-content:space-between;align-items:center;padding:0 10px;font:8px var(--mono);color:var(--dim)}.alerts-foot b{color:var(--red);font-weight:600}
+.radar-module{height:244px;flex:1}
+.radar-body{height:calc(100% - 37px);padding:5px 11px;display:grid;grid-template-columns:210px 1fr;gap:8px;align-items:center}
+.radar-svg{width:205px;height:188px}
+.radar-line{stroke:rgba(0,240,255,.18);stroke-width:1}.radar-web{fill:none;stroke:rgba(0,240,255,.12);stroke-width:1}.radar-fill{fill:rgba(0,240,255,.07);stroke:var(--cyan);stroke-width:1;filter:drop-shadow(0 0 6px rgba(0,240,255,.3))}.radar-label{font:7px var(--mono);fill:var(--dim)}
+.health-list{display:flex;flex-direction:column;gap:9px}.health-row{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:var(--muted)}.health-row b{font:9px var(--mono);color:var(--green)}.health-row i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);margin-right:5px}.health-row.warn b,.health-row.warn i{color:var(--amber);background:var(--amber)}
+.ticker{height:56px;position:relative;z-index:3;border-top:1px solid rgba(0,240,255,.22);background:linear-gradient(180deg,rgba(10,15,28,.96),rgba(5,7,13,.98));display:flex;align-items:center;overflow:hidden;box-shadow:0 -6px 22px rgba(0,0,0,.3)}
+.ticker-label{height:100%;width:150px;flex:none;display:flex;flex-direction:column;justify-content:center;padding-left:18px;border-right:1px solid rgba(0,240,255,.18);font:9px var(--mono);letter-spacing:.09em;color:var(--cyan)}.ticker-label small{color:var(--dim);font-size:7px;margin-top:4px}
+.ticker-window{flex:1;overflow:hidden;height:100%;mask-image:linear-gradient(90deg,transparent,black 3%,black 97%,transparent)}
+.ticker-track{display:flex;align-items:center;height:100%;width:max-content;animation:marquee 28s linear infinite}
+.tick{width:228px;flex:none;display:grid;grid-template-columns:1fr auto;row-gap:2px;padding:0 18px;border-right:1px solid rgba(0,240,255,.08)}
+.tick b{font:10px var(--mono);color:var(--text)}.tick .price{font:11px var(--mono);text-align:right}.tick small{font:8px var(--mono);color:var(--dim)}.tick .chg{font:8px var(--mono);text-align:right}.tick svg{height:12px;grid-column:1/3;margin-top:3px}.tick polyline{stroke:var(--red);fill:none;stroke-width:1}.tick.down polyline{stroke:var(--green)}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand-zone">
+      <div class="brand-sigil"></div>
+      <div><div class="brand-word">NEXUS</div><div class="brand-sub">GLOBAL TRADING COMMAND</div></div>
+      <div class="demo">DEMO / 模拟数据</div>
+    </div>
+    <nav class="nav">
+      <a class="active" href="dashboard.html"><span>01</span>态势总览</a>
+      <a href="map.html"><span>02</span>全球地图</a>
+      <a href="trades.html"><span>03</span>交易明细</a>
+      <a href="admin.html"><span>04</span>控制台</a>
+    </nav>
+    <div class="top-meta">
+      <div class="stream-state"><i></i>DATA STREAM / LIVE</div>
+      <div class="clock">2026.11.12 22:46:18<small>UTC +08:00 · SHANGHAI</small></div>
+      <div class="identity"><div class="avatar">AD</div><div><b>ADMIN / 林泽</b><span>FULL ACCESS · DEMO SESSION</span></div><div class="chev">⌄</div></div>
+    </div>
+  </header>
+
+  <main class="dash-grid">
+    <section class="col">
+      <div class="hud kpi-module">
+        <div class="ph"><div class="tag">D-01 / KPI</div><div class="ph-title">核心指标<b> / CORE PULSE</b></div><div class="ph-right"><span class="pulse-dot"></span><span class="mini-tab on">24H</span></div></div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label"><span>24H 成交额</span><span class="kpi-code">TURNOVER</span></div><div class="kpi-value">$48.62<span class="unit">B</span></div><div class="kpi-foot"><span class="up">▲ 8.42%</span><svg class="kpi-spark" viewBox="0 0 55 12"><polyline points="0,9 8,7 14,8 21,5 29,6 36,3 43,4 55,1"/></svg></div></div>
+          <div class="kpi"><div class="kpi-label"><span>24H 成交笔数</span><span class="kpi-code">TRADES</span></div><div class="kpi-value">1.24<span class="unit">M</span></div><div class="kpi-foot"><span class="up">▲ 12.8%</span><svg class="kpi-spark" viewBox="0 0 55 12"><polyline points="0,10 8,8 16,9 23,6 31,4 39,5 47,2 55,3"/></svg></div></div>
+          <div class="kpi"><div class="kpi-label"><span>撮合成功率</span><span class="kpi-code">FILL RATE</span></div><div class="kpi-value">99.93<span class="unit">%</span></div><div class="kpi-foot"><span class="cyan">SLA +0.03%</span><svg class="kpi-spark" viewBox="0 0 55 12"><polyline points="0,6 7,5 14,6 21,4 28,5 36,3 44,4 55,2"/></svg></div></div>
+          <div class="kpi"><div class="kpi-label"><span>活跃交易节点</span><span class="kpi-code">NODES</span></div><div class="kpi-value">26<span class="unit">/ 28</span></div><div class="kpi-foot"><span class="amber">2 NODES DEGRADED</span><span>92.8%</span></div></div>
+          <div class="kpi"><div class="kpi-label"><span>平均端到端延迟</span><span class="kpi-code">LATENCY</span></div><div class="kpi-value">38<span class="unit">ms</span></div><div class="kpi-foot"><span class="down">▼ 6.2ms</span><span>P99 92ms</span></div></div>
+          <div class="kpi"><div class="kpi-label"><span>全局风险指数</span><span class="kpi-code">RISK IDX</span></div><div class="kpi-value">27.4<span class="unit">/ 100</span></div><div class="kpi-foot"><span class="amber">ELEVATED</span><span>Δ +1.8</span></div></div>
+        </div>
+      </div>
+
+      <div class="hud asset-module">
+        <div class="ph"><div class="tag">D-06 / ASSET</div><div class="ph-title">资产类别占比<b> / EXPOSURE</b></div><div class="ph-right"><span class="mini-tab on">AMT</span><span class="mini-tab">VOL</span></div></div>
+        <div class="asset-body">
+          <div class="donut-wrap"><div class="donut"></div><div class="donut-label">24H NOTIONAL</div></div>
+          <div class="legend-list">
+            <div class="legend-row"><i style="background:var(--cyan)"></i><span>加密货币 / CRYPTO</span><b>34%</b></div>
+            <div class="legend-row"><i style="background:var(--magenta)"></i><span>外汇 / FX</span><b>28%</b></div>
+            <div class="legend-row"><i style="background:var(--amber)"></i><span>股票 / EQUITY</span><b>22%</b></div>
+            <div class="legend-row"><i style="background:var(--violet)"></i><span>商品 / COMMODITY</span><b>11%</b></div>
+            <div class="legend-row"><i style="background:var(--dim)"></i><span>债券 / BOND</span><b>5%</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud region-module">
+        <div class="ph"><div class="tag">D-07 / REGION</div><div class="ph-title">地区成交排行<b> / TOP 08</b></div><div class="ph-right"><span class="mini-tab on">NOTIONAL</span></div></div>
+        <div class="region-body">
+          <div class="region-row"><span class="rank">01</span><span class="name">上海 / SHANGHAI</span><span class="region-bar"><i style="width:94%"></i></span><span class="value">$8.72B</span></div>
+          <div class="region-row"><span class="rank">02</span><span class="name">纽约 / NEW YORK</span><span class="region-bar"><i style="width:86%"></i></span><span class="value">$7.94B</span></div>
+          <div class="region-row"><span class="rank">03</span><span class="name">伦敦 / LONDON</span><span class="region-bar"><i style="width:74%"></i></span><span class="value">$6.81B</span></div>
+          <div class="region-row"><span class="rank">04</span><span class="name">香港 / HONG KONG</span><span class="region-bar"><i style="width:61%"></i></span><span class="value">$5.62B</span></div>
+          <div class="region-row"><span class="rank">05</span><span class="name">新加坡 / SINGAPORE</span><span class="region-bar"><i style="width:54%"></i></span><span class="value">$4.98B</span></div>
+          <div class="region-row"><span class="rank">06</span><span class="name">东京 / TOKYO</span><span class="region-bar"><i style="width:46%"></i></span><span class="value">$4.21B</span></div>
+          <div class="region-row"><span class="rank">07</span><span class="name">法兰克福 / FRA</span><span class="region-bar"><i style="width:41%"></i></span><span class="value">$3.76B</span></div>
+          <div class="region-row"><span class="rank">08</span><span class="name">迪拜 / DUBAI</span><span class="region-bar"><i style="width:32%"></i></span><span class="value">$2.91B</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="hud chart-module">
+        <div class="ph"><div class="tag">D-02 / FLOW</div><div class="ph-title">分时成交额主图<b> / TURNOVER MATRIX</b></div><div class="ph-right"><button type="button" class="mini-tab">1H</button><button type="button" class="mini-tab">6H</button><button type="button" class="mini-tab on">24H</button></div></div>
+        <div class="chart-body">
+          <div class="chart-legend"><span class="lg"><i></i>CRYPTO</span><span class="lg"><i></i>FX</span><span class="lg"><i></i>EQUITY</span><span class="lg"><i></i>COMMODITY</span></div>
+          <svg class="chart-svg" viewBox="0 0 920 190" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="areaCyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00F0FF" stop-opacity=".24"/><stop offset="1" stop-color="#00F0FF" stop-opacity="0"/></linearGradient>
+              <linearGradient id="areaMagenta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF2BD6" stop-opacity=".16"/><stop offset="1" stop-color="#FF2BD6" stop-opacity="0"/></linearGradient>
+            </defs>
+            <g stroke="rgba(0,240,255,.10)" stroke-width="1">
+              <line x1="38" y1="18" x2="906" y2="18"/><line x1="38" y1="58" x2="906" y2="58"/><line x1="38" y1="98" x2="906" y2="98"/><line x1="38" y1="138" x2="906" y2="138"/><line x1="38" y1="178" x2="906" y2="178"/>
+              <line x1="38" y1="18" x2="38" y2="178"/><line x1="180" y1="18" x2="180" y2="178"/><line x1="322" y1="18" x2="322" y2="178"/><line x1="464" y1="18" x2="464" y2="178"/><line x1="606" y1="18" x2="606" y2="178"/><line x1="748" y1="18" x2="748" y2="178"/><line x1="906" y1="18" x2="906" y2="178"/>
+            </g>
+            <g font-family="ui-monospace,Menlo,monospace" font-size="8" fill="#4B6480"><text x="7" y="22">160</text><text x="7" y="62">120</text><text x="7" y="102">80</text><text x="7" y="142">40</text><text x="7" y="182">0</text><text x="35" y="189">00:00</text><text x="176" y="189">04:00</text><text x="318" y="189">08:00</text><text x="460" y="189">12:00</text><text x="602" y="189">16:00</text><text x="744" y="189">20:00</text><text x="880" y="189">NOW</text></g>
+            <path d="M38 151 L86 146 L132 149 L180 132 L226 138 L272 119 L322 125 L368 102 L414 111 L464 91 L512 97 L558 72 L606 83 L654 63 L700 76 L748 49 L794 60 L844 40 L906 47 L906 178 L38 178 Z" fill="url(#areaCyan)"/>
+            <path d="M38 161 L86 155 L132 157 L180 147 L226 150 L272 135 L322 141 L368 128 L414 133 L464 116 L512 121 L558 101 L606 108 L654 92 L700 98 L748 80 L794 90 L844 70 L906 75" fill="none" stroke="#00F0FF" stroke-width="1.5"/>
+            <path d="M38 167 L86 163 L132 168 L180 154 L226 160 L272 146 L322 151 L368 139 L414 146 L464 126 L512 134 L558 116 L606 122 L654 106 L700 114 L748 94 L794 101 L844 84 L906 91" fill="none" stroke="#FF2BD6" stroke-width="1.2" opacity=".9"/>
+            <path d="M38 173 L86 168 L132 171 L180 164 L226 167 L272 153 L322 157 L368 148 L414 150 L464 143 L512 147 L558 132 L606 138 L654 125 L700 131 L748 116 L794 122 L844 107 L906 111" fill="url(#areaMagenta)" opacity=".8"/>
+            <path d="M38 173 L86 168 L132 171 L180 164 L226 167 L272 153 L322 157 L368 148 L414 150 L464 143 L512 147 L558 132 L606 138 L654 125 L700 131 L748 116 L794 122 L844 107 L906 111" fill="none" stroke="#FF2BD6" stroke-width=".8" opacity=".55"/>
+            <line x1="654" y1="18" x2="654" y2="178" stroke="#FFB547" stroke-width=".8" opacity=".7"/><circle cx="654" cy="63" r="3" fill="#FFB547" stroke="#05070D" stroke-width="1.5"/>
+            <circle cx="654" cy="63" r="7" fill="none" stroke="#FFB547" opacity=".3"/>
+          </svg>
+          <div class="chart-tip"><small>20:00 CST / 06H</small><b>$3.17B</b><span>Δ +14.23%</span><span class="up">CRYPTO 41.8%</span></div>
+          <div class="chart-meta"><div class="item"><small>PEAK NOTIONAL</small><b>$4.82B</b></div><div class="sep"></div><div class="item"><small>24H AVG</small><b>$2.03B</b></div><div class="sep"></div><div class="item"><small>VOLATILITY</small><b class="amber">σ 18.7</b></div><div class="sep"></div><div class="item"><small>LAST TICK</small><b class="cyan">22:46:18.221</b></div></div>
+        </div>
+      </div>
+
+      <div class="hud map-module">
+        <div class="ph"><div class="tag">D-03 / GEO</div><div class="ph-title">全球交易态势<b> / MINI WORLD MAP</b></div><div class="ph-right"><span class="mini-tab on">13 NODES / 05 ROUTES</span><span class="mini-tab">CLICK TO EXPLORE ↗</span></div></div>
+        <div class="map-body">
+          <svg class="world-svg" viewBox="0 0 920 320" preserveAspectRatio="none">
+            <defs><filter id="nodeGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <g class="land">
+              <path d="M58 83 L93 59 L145 45 L210 51 L252 72 L269 102 L246 121 L219 119 L199 143 L175 150 L154 141 L130 154 L103 145 L78 121 Z"/>
+              <path d="M238 188 L269 166 L303 176 L323 206 L315 242 L292 278 L265 292 L244 267 L227 226 Z"/>
+              <path d="M350 73 L374 57 L387 73 L379 107 L365 131 L349 125 L341 99 Z"/>
+              <path d="M413 68 L445 56 L480 66 L496 91 L485 111 L458 119 L433 104 L407 93 Z"/>
+              <path d="M432 124 L479 115 L513 134 L524 171 L504 205 L470 215 L438 199 L418 171 Z"/>
+              <path d="M500 74 L579 48 L674 60 L739 91 L780 132 L756 162 L707 174 L676 203 L625 197 L593 177 L555 183 L512 155 L486 123 Z"/>
+              <path d="M606 187 L648 179 L680 193 L662 214 L621 217 L599 202 Z"/>
+              <path d="M676 188 L702 182 L721 206 L716 235 L694 247 L675 226 Z"/>
+              <path d="M748 227 L792 213 L838 231 L851 262 L822 288 L781 281 L753 256 Z"/>
+              <path d="M831 109 L846 104 L855 119 L845 134 L832 126 Z"/>
+            </g>
+            <g class="land-inner">
+              <path d="M83 109 L144 95 L207 99 L244 118"/><path d="M247 206 L281 194 L311 214"/><path d="M427 128 L480 142 L511 166"/><path d="M514 92 L580 80 L664 92 L740 126"/><path d="M588 151 L668 168 L746 152"/><path d="M674 214 L706 199 L722 226"/>
+            </g>
+            <g class="route cyan-line"><path d="M742 142 C676 86 528 97 445 101"/><path d="M445 101 C386 118 324 126 289 152"/></g>
+            <g class="route magenta-line"><path d="M290 153 C404 66 621 81 722 151"/><path d="M584 181 C636 164 682 171 722 178"/></g>
+            <g class="route amber-line"><path d="M624 192 C635 143 671 119 680 114"/></g>
+            <g filter="url(#nodeGlow)">
+              <g class="map-node" style="color:#00F0FF" transform="translate(289 152)"><circle class="ring" r="8"/><circle class="core" r="3"/><text x="9" y="3">NEW YORK</text></g>
+              <g class="map-node" style="color:#00F0FF" transform="translate(445 101)"><circle class="ring" r="6"/><circle class="core" r="2.5"/><text x="8" y="-3">LONDON</text></g>
+              <g class="map-node" style="color:#FF2BD6" transform="translate(620 181)"><circle class="ring" r="7"/><circle class="core" r="3"/><text x="-9" y="15">DUBAI</text></g>
+              <g class="map-node" style="color:#FF2BD6" transform="translate(720 151)"><circle class="ring" r="9"/><circle class="core" r="3.5"/><text x="10" y="4">SHANGHAI</text></g>
+              <g class="map-node" style="color:#FFB547" transform="translate(736 177)"><circle class="ring" r="6"/><circle class="core" r="2.5"/><text x="8" y="15">HONG KONG</text></g>
+              <g class="map-node" style="color:#FFB547" transform="translate(706 180)"><circle class="ring" r="4"/><circle class="core" r="2"/></g>
+              <g class="map-node" style="color:#00F0FF" transform="translate(763 184)"><circle class="ring" r="4"/><circle class="core" r="2"/></g>
+              <g class="map-node" style="color:#FF2BD6" transform="translate(779 169)"><circle class="ring" r="5"/><circle class="core" r="2.5"/><text x="-8" y="15">TOKYO</text></g>
+              <g class="map-node" style="color:#00F0FF" transform="translate(738 219)"><circle class="ring" r="6"/><circle class="core" r="2.5"/><text x="7" y="3">SINGAPORE</text></g>
+              <g class="map-node" style="color:#FFB547" transform="translate(815 266)"><circle class="ring" r="6"/><circle class="core" r="2.5"/><text x="8" y="4">SYDNEY</text></g>
+              <g class="map-node" style="color:#FF2BD6" transform="translate(281 264)"><circle class="ring" r="5"/><circle class="core" r="2.5"/><text x="8" y="4">SÃO PAULO</text></g>
+              <g class="map-node" style="color:#00F0FF" transform="translate(478 143)"><circle class="ring" r="5"/><circle class="core" r="2.5"/><text x="8" y="-4">FRANKFURT</text></g>
+              <g class="map-node" style="color:#7B5CFF" transform="translate(309 146)"><circle class="ring" r="4"/><circle class="core" r="2"/></g>
+            </g>
+          </svg>
+          <div class="map-stat"><span class="map-chip">VISIBLE <b>13</b></span><span class="map-chip">ROUTES <b>05</b></span><span class="map-chip">ANOMALY <b style="color:var(--red)">02</b></span></div>
+          <a class="map-open" href="map.html">OPEN GLOBAL MAP ↗</a>
+        </div>
+      </div>
+
+      <div class="hud depth-module">
+        <div class="ph"><div class="tag">D-08 / DEPTH</div><div class="ph-title">买卖盘深度<b> / BTC-USD ORDERBOOK</b></div><div class="ph-right"><span class="mini-tab on">L2 10</span><span class="mini-tab">BINANCE</span></div></div>
+        <div class="depth-body">
+          <div class="depth-head"><b>BID / 买盘</b><span>SPREAD 0.0008%</span><b>ASK / 卖盘</b></div>
+          <div class="depth-row sell"><span class="px">96,847.32</span><span class="depth-track"><i style="width:41%"></i></span></div>
+          <div class="depth-row sell"><span class="px">96,846.90</span><span class="depth-track"><i style="width:68%"></i></span></div>
+          <div class="depth-row sell"><span class="px">96,846.18</span><span class="depth-track"><i style="width:52%"></i></span></div>
+          <div class="depth-mid"></div>
+          <div class="depth-row buy"><span class="px">96,842.17</span><span class="depth-track"><i style="width:91%"></i></span></div>
+          <div class="depth-row buy"><span class="px">96,841.52</span><span class="depth-track"><i style="width:63%"></i></span></div>
+          <div class="depth-row buy"><span class="px">96,840.76</span><span class="depth-track"><i style="width:37%"></i></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="hud stream-module">
+        <div class="ph"><div class="tag">D-04 / STREAM</div><div class="ph-title">实时交易流水<b> / LIVE TAPE</b></div><div class="ph-right"><span class="mini-tab on">PAUSE</span><span class="mini-tab">1.5s</span></div></div>
+        <div class="stream-body">
+          <div class="stream-head"><span>TIME</span><span>ASSET / ROUTE</span><span style="text-align:right">NOTIONAL</span><span style="text-align:right">STATE</span></div>
+          <div class="stream-row selected"><span class="stream-time">22:46:18</span><span class="stream-asset">BTC/USD<small>纽约 → 香港</small></span><span class="stream-amt">$3.84M</span><span class="stream-status"><span class="state flagged">FLAGGED</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:16</span><span class="stream-asset">EUR/USD<small>伦敦 → 法兰克福</small></span><span class="stream-amt">$1.28M</span><span class="stream-status"><span class="state filled">FILLED</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:14</span><span class="stream-asset">600519.SH<small>上海 → 新加坡</small></span><span class="stream-amt">$1.20M</span><span class="stream-status"><span class="state filled">FILLED</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:12</span><span class="stream-asset">XAU/USD<small>迪拜 → 伦敦</small></span><span class="stream-amt">$612.4K</span><span class="stream-status"><span class="state pending">PENDING</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:09</span><span class="stream-asset">AAPL.NASDAQ<small>纽约 → 东京</small></span><span class="stream-amt">$946.2K</span><span class="stream-status"><span class="state filled">FILLED</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:07</span><span class="stream-asset">BTC/USD<small>新加坡 → 悉尼</small></span><span class="stream-amt">$284.7K</span><span class="stream-status"><span class="state failed">FAILED</span></span></div>
+          <div class="stream-row"><span class="stream-time">22:46:05</span><span class="stream-asset">USD/JPY<small>芝加哥 → 上海</small></span><span class="stream-amt">$4.12M</span><span class="stream-status"><span class="state filled">FILLED</span></span></div>
+        </div>
+      </div>
+
+      <div class="hud alerts-module">
+        <div class="ph"><div class="tag">D-05 / ALERTS</div><div class="ph-title">告警事件流<b> / SIGNAL INBOX</b></div><div class="ph-right"><span class="mini-tab on">02 OPEN</span><span class="mini-tab">ALL</span></div></div>
+        <div class="alert-body">
+          <div class="alert-row critical"><span class="bar"></span><div class="alert-copy"><b>风险评分突破阈值 · BTC/USD</b><span>纽约 → 香港 / TXN-7C42-E91A</span></div><span class="alert-time">22:46</span></div>
+          <div class="alert-row"><span class="bar"></span><div class="alert-copy"><b>法兰克福网关延迟尖峰</b><span>P99 218ms / NODE-FRA-04</span></div><span class="alert-time">22:43</span></div>
+          <div class="alert-row info"><span class="bar"></span><div class="alert-copy"><b>大额成交 · 600519.SH</b><span>$12.0M / 上海 → 新加坡</span></div><span class="alert-time">22:39</span></div>
+          <div class="alert-row"><span class="bar"></span><div class="alert-copy"><b>纽约清算队列负载升高</b><span>QUEUE 74% / NODE-NYC-01</span></div><span class="alert-time">22:36</span></div>
+          <div class="alert-row info"><span class="bar"></span><div class="alert-copy"><b>迪拜路由恢复稳定</b><span>LATENCY 44ms / AUTO-RECOVERED</span></div><span class="alert-time">22:31</span></div>
+          <div class="alert-row critical"><span class="bar"></span><div class="alert-copy"><b>异常价差检测 · EUR/USD</b><span>Δ 42bp / RISK ENGINE #R-09</span></div><span class="alert-time">22:28</span></div>
+        </div>
+        <div class="alerts-foot"><span>LAST 15 MIN · AUTO TRIAGE ON</span><b>2 UNRESOLVED</b></div>
+      </div>
+
+      <div class="hud radar-module">
+        <div class="ph"><div class="tag">D-09 / SYSTEM</div><div class="ph-title">系统状态雷达<b> / HEALTH MATRIX</b></div><div class="ph-right"><span class="mini-tab on">ALL GREEN</span></div></div>
+        <div class="radar-body">
+          <svg class="radar-svg" viewBox="0 0 210 190">
+            <g transform="translate(102 94)">
+              <polygon class="radar-web" points="0,-72 68,-22 42,58 -42,58 -68,-22"/>
+              <polygon class="radar-web" points="0,-55 52,-17 32,44 -32,44 -52,-17"/>
+              <polygon class="radar-web" points="0,-37 35,-11 22,30 -22,30 -35,-11"/>
+              <line class="radar-line" x1="0" y1="0" x2="0" y2="-72"/><line class="radar-line" x1="0" y1="0" x2="68" y2="-22"/><line class="radar-line" x1="0" y1="0" x2="42" y2="58"/><line class="radar-line" x1="0" y1="0" x2="-42" y2="58"/><line class="radar-line" x1="0" y1="0" x2="-68" y2="-22"/>
+              <polygon class="radar-fill" points="0,-67 62,-20 34,47 -39,54 -63,-20"/>
+              <circle r="3" fill="#00F0FF" opacity=".8"/><circle r="48" fill="none" stroke="rgba(0,240,255,.15)" stroke-width=".7"/><circle r="70" fill="none" stroke="rgba(0,240,255,.08)" stroke-width=".7"/>
+            </g>
+            <g class="radar-label"><text x="99" y="7" text-anchor="middle">GATEWAY</text><text x="177" y="80">MATCH</text><text x="154" y="169">CLEAR</text><text x="50" y="169">RISK</text><text x="7" y="80">DATA BUS</text></g>
+          </svg>
+          <div class="health-list">
+            <div class="health-row"><span><i></i>网关 / GATEWAY</span><b>99.98%</b></div>
+            <div class="health-row"><span><i></i>撮合 / MATCHING</span><b>99.93%</b></div>
+            <div class="health-row"><span><i></i>清算 / CLEARING</span><b>99.71%</b></div>
+            <div class="health-row warn"><span><i></i>风控 / RISK</span><b>96.42%</b></div>
+            <div class="health-row"><span><i></i>数据链路 / LINK</span><b>99.99%</b></div>
+            <div class="health-row" style="border-top:1px solid rgba(0,240,255,.08);padding-top:6px"><span style="font-family:var(--mono);color:var(--dim);font-size:8px">INCIDENT WINDOW</span><b style="color:var(--dim)">00:00:42</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ticker">
+    <div class="ticker-label">D-10 / MARKET TAPE<small>DEMO / 模拟行情</small></div>
+    <div class="ticker-window"><div class="ticker-track">
+      <div class="tick"><b>BTC/USD</b><span class="price up">96,842.17</span><small>CRYPTO</small><span class="chg up">+2.64%</span><svg viewBox="0 0 40 12"><polyline points="0,9 5,7 10,8 15,5 20,6 25,3 30,4 35,2 40,1"/></svg></div>
+      <div class="tick"><b>600519.SH</b><span class="price up">1,518.20</span><small>EQUITY</small><span class="chg up">+1.37%</span><svg viewBox="0 0 40 12"><polyline points="0,10 5,9 10,7 15,8 20,5 25,4 30,5 35,2 40,3"/></svg></div>
+      <div class="tick down"><b>EUR/USD</b><span class="price down">1.0842</span><small>FX</small><span class="chg down">-0.18%</span><svg viewBox="0 0 40 12"><polyline points="0,3 5,4 10,3 15,6 20,5 25,8 30,7 35,9 40,8"/></svg></div>
+      <div class="tick"><b>XAU/USD</b><span class="price up">4,195.60</span><small>COMMODITY</small><span class="chg up">+0.92%</span><svg viewBox="0 0 40 12"><polyline points="0,10 5,8 10,9 15,6 20,7 25,4 30,3 35,4 40,1"/></svg></div>
+      <div class="tick down"><b>USD/JPY</b><span class="price down">156.21</span><small>FX</small><span class="chg down">-0.31%</span><svg viewBox="0 0 40 12"><polyline points="0,2 5,5 10,4 15,6 20,5 25,8 30,7 35,9 40,10"/></svg></div>
+      <div class="tick"><b>ETH/USD</b><span class="price up">3,286.42</span><small>CRYPTO</small><span class="chg up">+3.12%</span><svg viewBox="0 0 40 12"><polyline points="0,9 5,8 10,5 15,6 20,3 25,4 30,1 35,3 40,2"/></svg></div>
+      <div class="tick"><b>000001.SZ</b><span class="price down">9.82</span><small>EQUITY</small><span class="chg down">-0.74%</span><svg viewBox="0 0 40 12"><polyline points="0,3 5,2 10,5 15,4 20,7 25,6 30,9 35,8 40,10"/></svg></div>
+      <div class="tick"><b>XAG/USD</b><span class="price up">48.27</span><small>COMMODITY</small><span class="chg up">+1.18%</span><svg viewBox="0 0 40 12"><polyline points="0,10 5,8 10,9 15,6 20,5 25,6 30,3 35,2 40,4"/></svg></div>
+      <div class="tick down"><b>GBP/USD</b><span class="price down">1.2638</span><small>FX</small><span class="chg down">-0.09%</span><svg viewBox="0 0 40 12"><polyline points="0,4 5,4 10,6 15,5 20,7 25,6 30,9 35,8 40,9"/></svg></div>
+      <div class="tick"><b>SOL/USD</b><span class="price up">184.73</span><small>CRYPTO</small><span class="chg up">+4.06%</span><svg viewBox="0 0 40 12"><polyline points="0,11 5,8 10,9 15,5 20,6 25,2 30,4 35,1 40,2"/></svg></div>
+      <div class="tick"><b>000001.SH</b><span class="price up">4,086.72</span><small>INDEX</small><span class="chg up">+0.86%</span><svg viewBox="0 0 40 12"><polyline points="0,9 5,7 10,8 15,5 20,4 25,5 30,3 35,2 40,3"/></svg></div>
+      <div class="tick"><b>BTC/USD</b><span class="price up">96,842.17</span><small>CRYPTO</small><span class="chg up">+2.64%</span><svg viewBox="0 0 40 12"><polyline points="0,9 5,7 10,8 15,5 20,6 25,3 30,4 35,2 40,1"/></svg></div>
+    </div></div>
+  </footer>
+</div>
+</body>
+</html>

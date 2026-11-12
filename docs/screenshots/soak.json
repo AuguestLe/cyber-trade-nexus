@@ -1,0 +1,116 @@
+{
+  "durationMs": 635255,
+  "speed": 4,
+  "samples": [
+    {
+      "ts": 1794477504886,
+      "heapMB": 14.4,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477549892,
+      "heapMB": 12.2,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477594894,
+      "heapMB": 18.9,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477639899,
+      "heapMB": 17.1,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477684901,
+      "heapMB": 14.3,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477729903,
+      "heapMB": 24.1,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477774905,
+      "heapMB": 19.2,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477819907,
+      "heapMB": 26.5,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477864909,
+      "heapMB": 23.3,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477909911,
+      "heapMB": 18.2,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477954914,
+      "heapMB": 14.1,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794477999918,
+      "heapMB": 21.2,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794478044920,
+      "heapMB": 15.3,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794478089921,
+      "heapMB": 21.6,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    },
+    {
+      "ts": 1794478134923,
+      "heapMB": 14.8,
+      "canvases": 5,
+      "tapeRows": 24,
+      "connected": true
+    }
+  ],
+  "firstHeapMB": 14.4,
+  "lastHeapMB": 14.8,
+  "maxHeapMB": 26.5,
+  "fps": 60,
+  "errors": []
+}

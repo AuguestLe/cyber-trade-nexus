@@ -1,0 +1,869 @@
+/* 交易明细页私有样式：页面布局、筛选栏、虚拟表格、骨架占位。 */
+
+.page {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  max-width: 1920px;
+  padding: 10px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  --trades-grid: 92px 150px minmax(120px, 1fr) minmax(120px, 1fr) 108px 72px 120px 116px 92px 72px 76px;
+  --trades-row-height: 48px;
+}
+
+.panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ---------------- 页头 ---------------- */
+
+.head {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 15px;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.04), transparent 62%);
+}
+
+.headTag {
+  flex: 0 0 auto;
+  height: 20px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  border-left: 2px solid var(--accent);
+  background: rgba(var(--accent-rgb), 0.06);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.headTitle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-1);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.headTitle span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+
+.headStats {
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+  margin-left: 26px;
+  min-width: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stat small {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.stat b {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--text-1);
+  text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.18);
+  white-space: nowrap;
+}
+
+.statAccent b {
+  color: var(--accent);
+}
+
+.statWarn b {
+  color: var(--amber);
+}
+
+
+.headActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.readonlyBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--line-soft);
+  background: rgba(5, 9, 18, 0.5);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+/* ---------------- 筛选栏 ---------------- */
+
+.filterBar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(5, 7, 13, 0.24);
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.searchBox {
+  flex: 0 0 300px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: rgba(16, 26, 46, 0.54);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.searchBox:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.6);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.16), inset 0 0 16px rgba(var(--accent-rgb), 0.05);
+}
+
+.searchIcon {
+  flex: 0 0 auto;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+.searchInput::placeholder {
+  color: var(--text-3);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+
+.filterSelect {
+  flex: 0 0 132px;
+  width: 132px;
+  height: 32px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  background-color: rgba(16, 26, 46, 0.44);
+}
+
+.filterSelect option {
+  background: #0a0f1c;
+}
+
+.statusChips {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.chip {
+  height: 26px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-soft);
+  background: rgba(5, 9, 18, 0.55);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.chip:hover {
+  color: var(--text-1);
+  border-color: var(--line);
+}
+
+.chipActive {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), 0.5);
+  background: rgba(var(--accent-rgb), 0.09);
+  box-shadow: inset 0 -2px 0 var(--accent), 0 0 10px rgba(var(--accent-rgb), 0.08);
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35);
+}
+
+.chipFilled {
+  color: rgba(57, 255, 158, 0.62);
+}
+
+.chipPending {
+  color: rgba(255, 181, 71, 0.66);
+}
+
+.chipFailed {
+  color: rgba(255, 77, 109, 0.68);
+}
+
+.chipFlagged {
+  color: rgba(255, 43, 214, 0.66);
+}
+
+.chipFilled.chipActive {
+  color: var(--green);
+  border-color: rgba(57, 255, 158, 0.5);
+  background: rgba(57, 255, 158, 0.07);
+  box-shadow: inset 0 -2px 0 var(--green);
+}
+
+.chipPending.chipActive {
+  color: var(--amber);
+  border-color: rgba(255, 181, 71, 0.5);
+  background: rgba(255, 181, 71, 0.07);
+  box-shadow: inset 0 -2px 0 var(--amber);
+}
+
+.chipFailed.chipActive {
+  color: var(--red);
+  border-color: rgba(255, 77, 109, 0.5);
+  background: rgba(255, 77, 109, 0.08);
+  box-shadow: inset 0 -2px 0 var(--red);
+}
+
+.chipFlagged.chipActive {
+  color: var(--accent-2);
+  border-color: rgba(255, 43, 214, 0.5);
+  background: rgba(255, 43, 214, 0.08);
+  box-shadow: inset 0 -2px 0 var(--accent-2);
+}
+
+.filterSpacer {
+  flex: 1 1 auto;
+}
+
+.amountLabel {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.09em;
+  color: var(--text-3);
+}
+
+.amountInput {
+  flex: 0 0 108px;
+  width: 108px;
+  height: 30px;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+.amountDash {
+  flex: 0 0 auto;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.nodeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: rgba(var(--accent-rgb), 0.07);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  max-width: 260px;
+}
+
+.nodeChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeChip:hover {
+  background: rgba(var(--accent-rgb), 0.13);
+}
+
+.nodeChipClose {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-2);
+}
+
+.matchInfo {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.matchInfo b {
+  color: var(--text-1);
+  font-weight: 500;
+}
+
+.matchInfo strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ---------------- 表格 ---------------- */
+
+.tradesGrid {
+  display: grid;
+  grid-template-columns: var(--trades-grid);
+  gap: 8px;
+  align-items: center;
+}
+
+.tableHead {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+  height: 40px;
+  padding: 0 12px 0 16px;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.06), rgba(var(--accent-rgb), 0.015));
+}
+
+.th {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.th b {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  opacity: 0.75;
+}
+
+.thRight {
+  justify-content: flex-end;
+}
+
+.thCenter {
+  justify-content: center;
+}
+
+.thSort {
+  padding: 0;
+  color: var(--text-3);
+  text-align: left;
+  transition: color 0.16s ease;
+  min-width: 0;
+  justify-self: start;
+}
+
+.thSort:hover {
+  color: var(--text-1);
+}
+
+.thSort.thRight {
+  justify-self: end;
+}
+
+.thActive {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35);
+}
+
+.thActive b {
+  color: rgba(var(--accent-rgb), 0.6);
+}
+
+.sortIcon {
+  flex: 0 0 auto;
+  opacity: 0.8;
+}
+
+.tableBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.stateWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+}
+
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 12px 0 16px;
+  position: relative;
+}
+
+.scroll:focus-visible {
+  outline: none;
+}
+
+.virtualInner {
+  position: relative;
+  width: 100%;
+}
+
+.rowWindow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.row {
+  position: relative;
+  height: var(--trades-row-height);
+  padding: 0;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.055);
+  font-family: var(--font-mono);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.row:hover {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+
+.rowSelected {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 43, 214, 0.09),
+    rgba(var(--accent-rgb), 0.035) 46%,
+    transparent 88%
+  );
+  box-shadow: inset 2px 0 0 var(--accent-2);
+}
+
+.rowSelected::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 2px;
+  height: calc(var(--trades-row-height) - 24px);
+  background: var(--accent-2);
+  box-shadow: 0 0 8px var(--accent-2);
+}
+
+.rowSelected:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 43, 214, 0.13),
+    rgba(var(--accent-rgb), 0.05) 50%,
+    transparent 90%
+  );
+}
+
+.rowPlaceholder {
+  cursor: default;
+  pointer-events: none;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.04);
+}
+
+.rowSkeleton {
+  height: 9px;
+  display: block;
+  opacity: 0.55;
+}
+
+.timeCell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.timeCell b {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.timeCell small {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.idCell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.idText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.18);
+}
+
+.copyBtn {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  color: var(--text-3);
+  opacity: 0.45;
+  transition: opacity 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+
+.row:hover .copyBtn,
+.copyBtn:focus-visible {
+  opacity: 1;
+}
+
+.copyBtn:hover {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), 0.3);
+  background: rgba(var(--accent-rgb), 0.08);
+}
+
+.nodeCell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nodeCell b {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeCell small {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assetCell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.assetCell b {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assetCell small {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+.sideChip {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.sideBuy {
+  color: var(--accent-2);
+}
+
+.sideSell {
+  color: var(--accent);
+}
+
+.amountCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+}
+
+.amountCell b {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.amountCell small {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+.priceCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+}
+
+.priceCell span {
+  font-size: 10px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.priceCell small {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.07em;
+}
+
+.centerCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.latencyCell {
+  text-align: right;
+  font-size: 9px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.latencyWarn {
+  color: var(--red);
+  text-shadow: 0 0 8px rgba(255, 77, 109, 0.35);
+}
+
+.riskCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.riskCell b {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  min-width: 26px;
+  text-align: right;
+}
+
+.riskBar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 3px;
+  background: rgba(var(--accent-rgb), 0.08);
+}
+
+.riskBar i {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  box-shadow: 0 0 5px currentColor;
+}
+
+.riskLow {
+  color: var(--accent);
+}
+
+.riskMed {
+  color: var(--amber);
+}
+
+.riskHigh {
+  color: var(--accent-2);
+}
+
+.riskCritical {
+  color: var(--red);
+}
+
+/* ---------------- 表尾 ---------------- */
+
+.foot {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line-soft);
+  background: rgba(5, 7, 13, 0.34);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.footLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.footRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.foot b {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.footLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+}
+
+.footLive i {
+  width: 5px;
+  height: 5px;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: tradesPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes tradesPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footLive i {
+    animation: none;
+  }
+}

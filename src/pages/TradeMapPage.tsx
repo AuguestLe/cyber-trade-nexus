@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Maximize2, Minus, Pause, Play, Plus, RotateCcw, Search, X } from 'lucide-react';
 import { dataApi } from '@/api/endpoints';
@@ -82,6 +82,17 @@ export function TradeMapPage() {
   const adapterRef = useRef<MapAdapter | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const pendingDeepRef = useRef<{ arcId: string | null; nodeId: string } | null>(null);
+  const pendingDeepTradeRef = useRef<string | null>(null);
+  const arcsSettledRef = useRef(false);
+
+  const clearTradeParam = useCallback(() => {
+    setSearchParams((previous) => {
+      if (!previous.get('trade')) return previous;
+      const next = new URLSearchParams(previous);
+      next.delete('trade');
+      return next;
+    });
+  }, [setSearchParams]);
 
   const effectiveWindow = scope === 'live' ? '1h' : range;
 
@@ -270,44 +281,52 @@ export function TradeMapPage() {
     adapterRef.current?.setSelected(selectedArcId);
   }, [selectedArcId]);
 
-  // 深链 ?trade=<id>（来自交易明细抽屉的「在地图定位」）：定位并高亮该笔交易所在弧线，
-  // 聚焦其端点，再打开交易详情抽屉；处理完即清掉参数，避免返回刷新时重复触发。
+  // 深链 ?trade=<id>（来自交易明细抽屉的「在地图定位」）：立即打开交易详情抽屉并聚焦卖家节点；
+  // 同时记录待定位交易，待弧线数据异步就绪后由下方效果完成弧线高亮。
   useEffect(() => {
     if (!deepTradeId) return;
     const id = decodeURIComponent(deepTradeId).trim();
-    const trade = useStreamStore
-      .getState()
-      .trades.find((item) => item.id === id);
+    pendingDeepTradeRef.current = id;
+    arcsSettledRef.current = false;
+    const trade = useStreamStore.getState().trades.find((item) => item.id === id);
     if (!trade) {
       toast('warn', `未找到交易 ${id}，可能已不在实时流中`);
-      setSearchParams((previous) => {
-        const next = new URLSearchParams(previous);
-        next.delete('trade');
-        return next;
-      });
+      clearTradeParam();
       return;
     }
-    const arc = findArcForTrade(trade, displayArcs);
+    // 立即聚焦卖家节点（若适配器已就绪），抽屉总是展开。
     const target: { arcId: string | null; nodeId: string } = {
-      arcId: arc?.id ?? null,
+      arcId: null,
       nodeId: trade.fromNodeId,
     };
     if (adapterRef.current) {
-      if (arc) setSelectedArcId(arc.id);
       adapterRef.current.focusNode(target.nodeId);
     } else {
-      // 底图/适配器尚未挂载（首跳深链的异步竞态）：记录待聚焦目标，挂载后消费。
       pendingDeepRef.current = target;
     }
-    if (!arc) toast('warn', '该交易不在当前筛选/时间窗内，已定位关联节点');
     setArcDrawer(null);
     openTrade(trade.id);
-    setSearchParams((previous) => {
-      const next = new URLSearchParams(previous);
-      next.delete('trade');
-      return next;
-    });
-  }, [deepTradeId, displayArcs, toast, openTrade, setSearchParams]);
+  }, [deepTradeId, toast, openTrade, clearTradeParam]);
+
+  // 弧线数据首次就绪后，尝试为深链交易高亮所在弧线；然后无论命中与否都清掉参数（不悬挂）。
+  useEffect(() => {
+    if (!displayArcs.length || !pendingDeepTradeRef.current) return;
+    if (arcsSettledRef.current) return;
+    arcsSettledRef.current = true;
+
+    const id = pendingDeepTradeRef.current;
+    pendingDeepTradeRef.current = null;
+    const trade = useStreamStore.getState().trades.find((item) => item.id === id);
+    const arc = trade ? findArcForTrade(trade, displayArcs) : undefined;
+    if (arc) {
+      setSelectedArcId(arc.id);
+      adapterRef.current?.focusNode(arc.fromNodeId);
+      toast('info', '已在地图定位该交易');
+    } else {
+      toast('info', '该交易不在当前筛选/时间窗内，已定位关联节点');
+    }
+    clearTradeParam();
+  }, [displayArcs, deepTradeId, toast, clearTradeParam]);
 
   useEffect(() => {
     if (!playing || !replayOn) return undefined;

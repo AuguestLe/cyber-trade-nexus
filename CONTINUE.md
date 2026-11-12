@@ -33,8 +33,16 @@ npm run dev:web         # Vite 前端
 | `src/lib/arc.ts` | 新增 `findArcForTrade(trade, arcs)` 纯函数，按 `from|to|assetClass` 三元组定位交易所在弧线 |
 | `src/lib/__tests__/arc.test.ts` | 为上述函数补 4 条单测（命中/异类/无匹配/空列表） |
 | `src/pages/TradeMapPage.tsx` | 消费深链 `?trade=<id>`（来自交易明细抽屉「在地图定位」）：找到交易→高亮所在弧线→聚焦卖家节点→打开交易抽屉→清除参数。含防底图异步挂载竞态的 `pendingDeepRef` 机制 |
+| `scripts/e2e-deeplink.mjs` | 端到端验证脚本（登录 admin → 明细页点行 → 抽屉 → 在地图定位 → 断言 `/map` 导航/抽屉恢复/参数清除） |
 
-## 5. 已知注意点 / 技术决策
+## 5. 已验证项（E2E，through Vite 5173）
+
+- 交易明细页：行点击 → 详情抽屉打开 ✅
+- 「在地图定位」：跳转 `/map` ✅ → 抽屉重新打开 ✅ → `?trade=` 参数正确清除（不悬挂）✅
+- `SELECTED 00` 为预期降级路径：若该交易的弧线不在当前地图 top-N 弧线/筛选内，退化为聚焦卖家节点 + toast，不强行误定位。弧线高亮命中路径由 `findArcForTrade` 单测覆盖。
+- 注：地图 `SELECTED 01` 命中依赖该交易弧线出现在地图当前窗口的 top-80 聚合弧线中（数据驱动，无法对任意交易保证）；已验证降级路径与纯函数命中两分支。
+
+## 6. 已知注意点 / 技术决策
 
 - 深链竞态：`?trade=` 首次进入时底图 `geo` 是异步加载的，适配器尚未 mount，故用 `pendingDeepRef` 暂存目标，等 `setNodes` 效应触发时消费。
 - 地图弧线按 `fromNodeId|toNodeId|assetClass` 三元组聚合，定位交易需用同一键。
@@ -42,13 +50,13 @@ npm run dev:web         # Vite 前端
 - 共享层契约（`src/api/*`、`src/store/*`、`src/App.tsx`、全局样式）有边界，改需求先用现有 API 适配，勿改契约。
 - 全部金额统一 USD（设计评审 R-02/R-09），节点用真实经纬度，权限动作按角色显隐。
 
-## 6. 建议下一步（未做）
+## 7. 建议下一步（未做）
 
 - 深链定位的浏览器端到端验证（`scripts/screenshot.mjs` / `verify-interactions.mjs` 体系可复用）。
 - `docs/07-测试计划与用例.md` 若标注了未执行的用例，可补齐。
 - 若你有更多打磨需求，按需求矩阵在对应页面/组件内扩展即可。
 
-## 7. 会话状态
+## 8. 会话状态
 
 - 当前文件策略：workspace-write；审批策略：ask。
 - 工作目录：`/Users/le/Desktop/project`，项目根 `/Users/le/Desktop/project/cyber-trade-nexus`。

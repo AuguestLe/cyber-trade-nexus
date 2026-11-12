@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HudCard } from '@/components/HudCard';
-import { useAnimationPulse } from '@/hooks/useAnimationPulse';
 import { groupTradesToArcs } from '@/lib/arc';
 import { formatUsdCompact } from '@/lib/format';
 import { ASSET_CLASS_COLORS, NODE_STATUS_COLORS } from '@/lib/theme';
@@ -27,7 +26,6 @@ function project(lon: number, lat: number): [number, number] {
 
 interface MiniArc {
   id: string;
-  amount: number;
   x1: number;
   y1: number;
   cx: number;
@@ -41,6 +39,14 @@ interface MiniArc {
 export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
   const navigate = useNavigate();
   const [hover, setHover] = useState<{ node: NodeDTO; x: number; y: number } | null>(null);
+  // 入场窗口：只有页面挂载后的前 3.5s 允许路径/节点环播动画。
+  // SSE 不断产生新的弧线 bundle，若一直挂着 animation，新 path 会反复重播。
+  const [entering, setEntering] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setEntering(false), 3500);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
   const topNodes = useMemo(
@@ -67,7 +73,6 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
         const anomaly = arc.status === 'failed' || arc.status === 'flagged';
         return {
           id: arc.id,
-          amount: arc.amount,
           x1,
           y1,
           cx,
@@ -81,14 +86,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
       .filter((arc): arc is MiniArc => Boolean(arc));
   }, [trades, nodeMap]);
 
-  // 以「已渲染 8 条弧线的累计金额」为增长信号：单笔交易对其影响很小，
-  // 只有整体成交额明显抬升（>15%）才判定为真正跳变并重播一次动画。
-  const arcAmount = useMemo(
-    () => arcs.reduce((sum, arc) => sum + (Number.isFinite(arc.amount) ? arc.amount : 0), 0),
-    [arcs],
-  );
-  const pulse = useAnimationPulse(arcAmount, { growthThreshold: 0.15, minIntervalMs: 6000 });
-
+  // 动画只跟页面挂载走（首次加载 / tab 切回）：不监听数据增长，避免 SSE 让弧线反复重播。
   const anomalies = nodes.filter((node) => node.status === 'alert').length;
 
   const handleNodeEnter = (node: NodeDTO, event: React.MouseEvent<SVGCircleElement>) => {
@@ -124,7 +122,11 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
         aria-label="打开全球交易地图"
       >
         {loading && <div className={styles.chartCanvas}>正在读取全球节点…</div>}
-        <svg className={styles.miniSvg} viewBox={`0 0 ${VB.width} ${VB.height}`} preserveAspectRatio="none">
+        <svg
+          className={`${styles.miniSvg} ${entering ? styles.miniEnter : ''}`}
+          viewBox={`0 0 ${VB.width} ${VB.height}`}
+          preserveAspectRatio="none"
+        >
           <defs>
             <filter id="miniGlow" x="-40%" y="-40%" width="180%" height="180%">
               <feGaussianBlur stdDeviation="2.2" result="blur" />
@@ -149,7 +151,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
           ))}
           {arcs.map((arc) => (
             <path
-              key={`flow-${arc.id}-${pulse}`}
+              key={`flow-${arc.id}`}
               className={styles.miniArc}
               d={`M ${arc.x1.toFixed(1)} ${arc.y1.toFixed(1)} Q ${arc.cx.toFixed(1)} ${arc.cy.toFixed(1)} ${arc.x2.toFixed(1)} ${arc.y2.toFixed(1)}`}
               fill="none"
@@ -166,7 +168,6 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
             return (
               <g key={node.id} className={styles.miniNode} filter="url(#miniGlow)">
                 <circle
-                  key={`ring-${pulse}`}
                   cx={x}
                   cy={y}
                   r={radius + 3}
@@ -175,7 +176,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
                   strokeWidth={0.8}
                   opacity={0.5}
                   className={styles.miniNodeRing}
-                  style={{ animationDelay: `${(index % 5) * 0.4}s` }}
+                  style={{ animationDelay: `${(index % 5) * 0.18}s` }}
                 />
                 <circle
                   cx={x}

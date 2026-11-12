@@ -68,11 +68,11 @@ export function LiveTape() {
       </div>
       <div className={styles.tapeBody}>
         {rows.length === 0 && <div className={styles.depthMeta}>等待实时数据流…</div>}
-        {rows.map((trade, index) => (
+        {rows.map((trade) => (
           <button
             key={trade.id}
             type="button"
-            className={`${styles.tapeRow} ${index === 0 && !paused ? styles.tapeRowNew : ''}`}
+            className={styles.tapeRow}
             onClick={() => openTrade(trade.id)}
           >
             <span className={styles.tapeTime}>{formatClock(trade.ts)}</span>

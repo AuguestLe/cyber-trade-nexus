@@ -25,12 +25,13 @@ export function AssetPanel({
   const toggle = useFilterStore((state) => state.toggleAssetClass);
   const motion = useConfigStore((state) => state.motion);
 
-  const visibleItems = items.filter((item) => !hidden.includes(item.assetClass));
   const total = items.reduce((sum, item) => sum + item.amount, 0);
-  const option = useMemo(
-    () => buildAssetDonutOption(visibleItems, motion === 'reduced'),
-    [visibleItems, motion],
-  );
+  // 过滤结果必须放在 useMemo 内：否则每次父级渲染都会产生新数组，
+  // 让 option 变化并触发一次无意义的 setOption，打断入场动画。
+  const option = useMemo(() => {
+    const visibleItems = items.filter((item) => !hidden.includes(item.assetClass));
+    return buildAssetDonutOption(visibleItems, motion === 'reduced');
+  }, [items, hidden, motion]);
 
   return (
     <HudCard

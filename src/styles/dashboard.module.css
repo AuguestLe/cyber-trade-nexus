@@ -220,6 +220,11 @@
 
 .miniArc {
   stroke-dasharray: 4 6;
+  /* 与 nxDash 的末帧保持一致，入场窗口结束后移除动画不会产生位移跳变 */
+  stroke-dashoffset: -20;
+}
+
+.miniEnter .miniArc {
   animation: nxDash 2.2s linear 1 both;
 }
 
@@ -233,8 +238,8 @@
   cursor: pointer;
 }
 
-.miniNodeRing {
-  animation: nxPulse 2.6s ease-in-out 3 both;
+.miniEnter .miniNodeRing {
+  animation: nxPulse 2.6s ease-in-out 1 both;
 }
 
 @keyframes nxPulse {
@@ -493,23 +498,6 @@
   border-bottom: 1px solid rgba(var(--accent-rgb), 0.05);
   text-align: left;
   transition: background 0.15s ease;
-}
-
-.tapeRowNew {
-  animation: nxTapeIn 0.45s ease-out;
-}
-
-@keyframes nxTapeIn {
-  from {
-    background: rgba(0, 240, 255, 0.16);
-    transform: translateY(-3px);
-    opacity: 0.4;
-  }
-  to {
-    background: transparent;
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
 
 .tapeRow:hover {

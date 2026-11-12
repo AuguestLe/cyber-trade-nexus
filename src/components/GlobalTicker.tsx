@@ -13,8 +13,8 @@ export function GlobalTicker() {
   const toast = useUiStore((state) => state.toast);
   const navigate = useNavigate();
 
-  const ticks = markets.length > 0 ? markets : [];
-  const loop = [...ticks, ...ticks];
+  // 单向行情带：只渲染真实行情序列，不做首尾衔接的循环拷贝。
+  const ticks = markets;
 
   const handleClick = (assetClass: string) => {
     setAssetClass(assetClass as never);
@@ -29,23 +29,22 @@ export function GlobalTicker() {
         <span className={styles.tickerLabelSub}>DEMO / 模拟行情 · 涨红跌绿</span>
       </div>
       <div className={styles.tickerWindow}>
-        {loop.length === 0 ? (
+        {ticks.length === 0 ? (
           <div className={styles.tick}>
             <span className={styles.tickAsset}>AWAITING TICK STREAM…</span>
           </div>
         ) : (
           <div className={styles.tickerTrack}>
-            {loop.map((tick, index) => {
+            {ticks.map((tick) => {
               const up = tick.changePct > 0;
               const tone = up ? 'var(--red)' : 'var(--green)';
               return (
                 <div
-                  key={`${tick.asset}-${index}`}
+                  key={tick.asset}
                   className={styles.tick}
                   onClick={() => handleClick(tick.assetClass)}
                   role="button"
                   tabIndex={-1}
-                  aria-hidden={index >= ticks.length}
                 >
                   <span className={styles.tickAsset}>{tick.asset}</span>
                   <span className={styles.tickPrice} style={{ color: tone }}>

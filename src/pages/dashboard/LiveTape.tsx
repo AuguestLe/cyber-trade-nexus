@@ -135,11 +135,18 @@ export function AlertFeed() {
           const tone =
             alert.level === 'critical' ? styles.alertCritical : alert.level === 'warn' ? styles.alertWarn : '';
           return (
-            <button
+            <div
               key={alert.id}
-              type="button"
+              role="button"
+              tabIndex={0}
               className={`${styles.alertRow} ${tone} ${alert.handled ? styles.alertHandled : ''}`}
               onClick={() => {
+                if (alert.tradeId) openTrade(alert.tradeId);
+                else if (alert.nodeId) openNode(alert.nodeId);
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
                 if (alert.tradeId) openTrade(alert.tradeId);
                 else if (alert.nodeId) openNode(alert.nodeId);
               }}
@@ -164,7 +171,7 @@ export function AlertFeed() {
                   处置
                 </button>
               )}
-            </button>
+            </div>
           );
         })}
       </div>

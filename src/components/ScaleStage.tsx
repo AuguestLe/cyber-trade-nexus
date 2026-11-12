@@ -1,15 +1,14 @@
 import type { ReactNode } from 'react';
-import { useScale } from '@/hooks/useScale';
 import styles from '@/styles/layout.module.css';
 
-/** 1920×1080 固定画布 + 等比缩放，保证 1366×768~3840×2160 单屏可用。 */
+/**
+ * 流式自适应画布：铺满视口，不再固定 1920×1080 等比缩放。
+ * 各页面内部使用百分比/fr 布局，窗口任意大小都自动铺满，无黑边。
+ */
 export function ScaleStage({ children }: { children: ReactNode }) {
-  const scale = useScale();
   return (
     <div className={styles.stage}>
-      <div className={styles.canvas} style={{ transform: `scale(${scale})` }}>
-        {children}
-      </div>
+      <div className={styles.canvas}>{children}</div>
     </div>
   );
 }

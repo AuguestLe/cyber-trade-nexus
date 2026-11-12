@@ -2,20 +2,16 @@
   position: fixed;
   inset: 0;
   z-index: 1;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   background: transparent;
 }
 
+/* 流式画布：铺满视口，由内部百分比/弹性布局自适应，取代固定 1920×1080 等比缩放 */
 .canvas {
   position: relative;
-  width: 1920px;
-  height: 1080px;
-  flex: 0 0 auto;
-  transform-origin: center center;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  will-change: transform;
 }
 
 .app {
@@ -377,31 +373,24 @@
 .tickerWindow {
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   position: relative;
   display: flex;
   align-items: center;
+  scrollbar-width: none;
 }
 
+.tickerWindow::-webkit-scrollbar {
+  display: none;
+}
+
+/* 单向行情带：新行情从右端追加，滚动到底即停，不做首尾衔接循环 */
 .tickerTrack {
   display: flex;
   align-items: center;
   gap: 0;
-  animation: nxTicker 70s linear infinite;
-  will-change: transform;
-}
-
-.tickerWindow:hover .tickerTrack {
-  animation-play-state: paused;
-}
-
-@keyframes nxTicker {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  will-change: scroll-position;
 }
 
 .tick {

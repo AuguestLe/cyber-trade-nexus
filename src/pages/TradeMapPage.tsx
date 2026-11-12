@@ -118,7 +118,7 @@ export function TradeMapPage() {
     enabled: Boolean(token),
     refreshMs: 30_000,
   });
-  const nodes: NodeDTO[] = nodesRes.data?.nodes ?? [];
+  const nodes: NodeDTO[] = useMemo(() => nodesRes.data?.nodes ?? [], [nodesRes.data]);
   const nodeLabel = useMemo(
     () => nodes.find((node) => node.id === nodeId)?.name ?? null,
     [nodes, nodeId],
@@ -179,7 +179,10 @@ export function TradeMapPage() {
     [playbackRes.data, nodes],
   );
 
-  const sourceArcs = replayOn ? replayArcs : (arcsRes.data?.items ?? []);
+  const sourceArcs = useMemo(
+    () => (replayOn ? replayArcs : (arcsRes.data?.items ?? [])),
+    [replayOn, replayArcs, arcsRes.data],
+  );
   const displayArcs = useMemo(
     () => sourceArcs.filter((arc) => !hidden.includes(arc.assetClass)),
     [sourceArcs, hidden],

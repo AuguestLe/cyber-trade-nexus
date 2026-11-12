@@ -30,13 +30,26 @@ export default tseslint.config(
     },
   },
   {
-    files: ['server/**/*.js', 'scripts/**/*.mjs'],
+    files: ['server/**/*.js'],
     languageOptions: {
       globals: { ...globals.node },
       sourceType: 'module',
     },
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    // 截图 / 压测脚本的 page.evaluate 回调运行在浏览器上下文，同时需要 Node API。
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+      sourceType: 'module',
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
 );

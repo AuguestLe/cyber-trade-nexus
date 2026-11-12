@@ -6,7 +6,6 @@ import {
   parseEnum,
   parseInjectBody,
   parseSeed,
-  parseStringParam,
 } from '../core/validate.js';
 import { requireRole } from '../middleware/auth.js';
 

@@ -364,7 +364,7 @@ export function LoginPage() {
       </main>
 
       <footer className={styles.footer}>
-        <span>NEXUS · DEMO BUILD v1.0 · SCREEN 1920×1080</span>
+        <span>NEXUS · DEMO BUILD v1.0 · FLUID VIEWPORT</span>
         <span>NO REAL TRANSACTIONS · MOCK AUTH ONLY</span>
         <span>LOCAL GEOJSON · ZERO EXTERNAL NETWORK</span>
       </footer>

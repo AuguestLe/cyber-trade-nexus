@@ -54,7 +54,6 @@ export function createApp(provider) {
     });
   });
 
-  // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, _next) => {
     const isJsonParse = err instanceof SyntaxError && err.status === 400 && 'body' in err;
     const appError = err instanceof AppError

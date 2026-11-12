@@ -220,7 +220,7 @@
 
 .miniArc {
   stroke-dasharray: 4 6;
-  animation: nxDash 2.2s linear infinite;
+  animation: nxDash 2.2s linear 1 both;
 }
 
 @keyframes nxDash {
@@ -234,7 +234,7 @@
 }
 
 .miniNodeRing {
-  animation: nxPulse 2.6s ease-in-out infinite;
+  animation: nxPulse 2.6s ease-in-out 3 both;
 }
 
 @keyframes nxPulse {
@@ -598,7 +598,7 @@
 
 .alertCritical .alertBar {
   background: var(--red);
-  animation: nxBlink 1.6s ease-in-out infinite;
+  animation: nxBlink 1.6s ease-in-out 2 both;
 }
 
 @keyframes nxBlink {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HudCard } from '@/components/HudCard';
+import { useAnimationPulse } from '@/hooks/useAnimationPulse';
 import { groupTradesToArcs } from '@/lib/arc';
 import { formatUsdCompact } from '@/lib/format';
 import { ASSET_CLASS_COLORS, NODE_STATUS_COLORS } from '@/lib/theme';
@@ -26,6 +27,7 @@ function project(lon: number, lat: number): [number, number] {
 
 interface MiniArc {
   id: string;
+  amount: number;
   x1: number;
   y1: number;
   cx: number;
@@ -65,6 +67,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
         const anomaly = arc.status === 'failed' || arc.status === 'flagged';
         return {
           id: arc.id,
+          amount: arc.amount,
           x1,
           y1,
           cx,
@@ -77,6 +80,14 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
       })
       .filter((arc): arc is MiniArc => Boolean(arc));
   }, [trades, nodeMap]);
+
+  // 以「已渲染 8 条弧线的累计金额」为增长信号：单笔交易对其影响很小，
+  // 只有整体成交额明显抬升（>15%）才判定为真正跳变并重播一次动画。
+  const arcAmount = useMemo(
+    () => arcs.reduce((sum, arc) => sum + (Number.isFinite(arc.amount) ? arc.amount : 0), 0),
+    [arcs],
+  );
+  const pulse = useAnimationPulse(arcAmount, { growthThreshold: 0.15, minIntervalMs: 6000 });
 
   const anomalies = nodes.filter((node) => node.status === 'alert').length;
 
@@ -138,7 +149,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
           ))}
           {arcs.map((arc) => (
             <path
-              key={`flow-${arc.id}`}
+              key={`flow-${arc.id}-${pulse}`}
               className={styles.miniArc}
               d={`M ${arc.x1.toFixed(1)} ${arc.y1.toFixed(1)} Q ${arc.cx.toFixed(1)} ${arc.cy.toFixed(1)} ${arc.x2.toFixed(1)} ${arc.y2.toFixed(1)}`}
               fill="none"
@@ -155,6 +166,7 @@ export function MiniWorldMap({ nodes, trades, loading }: MiniWorldMapProps) {
             return (
               <g key={node.id} className={styles.miniNode} filter="url(#miniGlow)">
                 <circle
+                  key={`ring-${pulse}`}
                   cx={x}
                   cy={y}
                   r={radius + 3}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arcCurveness, arcMidpoint, groupTradesToArcs } from '../arc';
+import { arcCurveness, arcMidpoint, findArcForTrade, groupTradesToArcs } from '../arc';
 import type { TradeDTO } from '@/types';
 
 function makeTrade(overrides: Partial<TradeDTO> = {}): TradeDTO {
@@ -78,5 +78,34 @@ describe('groupTradesToArcs', () => {
     );
     expect(arcs).toHaveLength(1);
     expect(arcs[0].assetClass).toBe('crypto');
+  });
+});
+
+describe('findArcForTrade', () => {
+  const arcs = [
+    { id: 'a_sh_nyc_crypto', fromNodeId: 'n_sh', toNodeId: 'n_nyc', assetClass: 'crypto' },
+    { id: 'a_sh_nyc_fx', fromNodeId: 'n_sh', toNodeId: 'n_nyc', assetClass: 'fx' },
+    { id: 'a_sg_lon_crypto', fromNodeId: 'n_sg', toNodeId: 'n_lon', assetClass: 'crypto' },
+  ] as const;
+
+  it('按端点 + 类别三元组命中同一条弧线', () => {
+    const trade = { fromNodeId: 'n_sh', toNodeId: 'n_nyc', assetClass: 'fx' as const };
+    const found = findArcForTrade(trade, arcs as never);
+    expect(found?.id).toBe('a_sh_nyc_fx');
+  });
+
+  it('同端点不同类别命中不同弧线', () => {
+    const trade = { fromNodeId: 'n_sh', toNodeId: 'n_nyc', assetClass: 'crypto' as const };
+    const found = findArcForTrade(trade, arcs as never);
+    expect(found?.id).toBe('a_sh_nyc_crypto');
+  });
+
+  it('无匹配时返回 undefined', () => {
+    const trade = { fromNodeId: 'n_zz', toNodeId: 'n_nyc', assetClass: 'crypto' as const };
+    expect(findArcForTrade(trade, arcs as never)).toBeUndefined();
+  });
+
+  it('空弧线列表返回 undefined', () => {
+    expect(findArcForTrade({ fromNodeId: 'n_sh', toNodeId: 'n_nyc', assetClass: 'crypto' }, [])).toBeUndefined();
   });
 });

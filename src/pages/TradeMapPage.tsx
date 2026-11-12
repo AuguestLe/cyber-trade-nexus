@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Maximize2, Minus, Pause, Play, Plus, RotateCcw, Search, X } from 'lucide-react';
 import { dataApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
@@ -15,7 +15,7 @@ import { EChartsMapAdapter } from '@/map/EChartsMapAdapter';
 import type { MapAdapter } from '@/map/MapAdapter';
 import { MapFilterPanel } from './map/MapFilterPanel';
 import { ArcDrawer } from './map/ArcDrawer';
-import { groupTradesToArcs } from '@/lib/arc';
+import { groupTradesToArcs, findArcForTrade } from '@/lib/arc';
 import { formatClock } from '@/lib/format';
 import styles from '@/styles/map.module.css';
 import type { ArcDTO, ArcQuery, MapLayers, NodeDTO, TradeDTO, TradeQuery } from '@/types';
@@ -43,6 +43,8 @@ function matchTrade(arc: ArcDTO, candidates: TradeDTO[]): TradeDTO | undefined {
 
 export function TradeMapPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const deepTradeId = searchParams.get('trade');
   const token = useAuthStore((state) => state.token);
   const refreshMs = useConfigStore((state) => state.refreshMs);
   const range = useFilterStore((state) => state.range);
@@ -79,6 +81,7 @@ export function TradeMapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const adapterRef = useRef<MapAdapter | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const pendingDeepRef = useRef<{ arcId: string | null; nodeId: string } | null>(null);
 
   const effectiveWindow = scope === 'live' ? '1h' : range;
 
@@ -232,6 +235,9 @@ export function TradeMapPage() {
     adapter.setArcs(latestRef.current.arcs);
     adapter.setLayers(latestRef.current.layers);
     adapter.setHeat(latestRef.current.heat);
+    // 深链选中态：挂载时即应用；聚焦待 nodeMap 就绪后在 setNodes 效应中消费。
+    const pending = pendingDeepRef.current;
+    if (pending) adapter.setSelected(pending.arcId);
     return () => {
       adapter.dispose();
       adapterRef.current = null;
@@ -240,6 +246,12 @@ export function TradeMapPage() {
 
   useEffect(() => {
     adapterRef.current?.setNodes(nodes);
+    // 底图/适配器就绪后，消费尚待聚焦的深链节点。
+    const pending = pendingDeepRef.current;
+    if (pending && adapterRef.current) {
+      adapterRef.current.focusNode(pending.nodeId);
+      pendingDeepRef.current = null;
+    }
   }, [nodes]);
 
   useEffect(() => {
@@ -257,6 +269,45 @@ export function TradeMapPage() {
   useEffect(() => {
     adapterRef.current?.setSelected(selectedArcId);
   }, [selectedArcId]);
+
+  // 深链 ?trade=<id>（来自交易明细抽屉的「在地图定位」）：定位并高亮该笔交易所在弧线，
+  // 聚焦其端点，再打开交易详情抽屉；处理完即清掉参数，避免返回刷新时重复触发。
+  useEffect(() => {
+    if (!deepTradeId) return;
+    const id = decodeURIComponent(deepTradeId).trim();
+    const trade = useStreamStore
+      .getState()
+      .trades.find((item) => item.id === id);
+    if (!trade) {
+      toast('warn', `未找到交易 ${id}，可能已不在实时流中`);
+      setSearchParams((previous) => {
+        const next = new URLSearchParams(previous);
+        next.delete('trade');
+        return next;
+      });
+      return;
+    }
+    const arc = findArcForTrade(trade, displayArcs);
+    const target: { arcId: string | null; nodeId: string } = {
+      arcId: arc?.id ?? null,
+      nodeId: trade.fromNodeId,
+    };
+    if (adapterRef.current) {
+      if (arc) setSelectedArcId(arc.id);
+      adapterRef.current.focusNode(target.nodeId);
+    } else {
+      // 底图/适配器尚未挂载（首跳深链的异步竞态）：记录待聚焦目标，挂载后消费。
+      pendingDeepRef.current = target;
+    }
+    if (!arc) toast('warn', '该交易不在当前筛选/时间窗内，已定位关联节点');
+    setArcDrawer(null);
+    openTrade(trade.id);
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      next.delete('trade');
+      return next;
+    });
+  }, [deepTradeId, displayArcs, toast, openTrade, setSearchParams]);
 
   useEffect(() => {
     if (!playing || !replayOn) return undefined;

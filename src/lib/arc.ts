@@ -7,6 +7,19 @@ const STATUS_RANK: Record<TradeStatus, number> = {
   flagged: 3,
 };
 
+/**
+ * 在已渲染的弧线中定位与某笔交易端点/类别匹配的那条。
+ * 弧线按 fromNodeId|toNodeId|assetClass 聚合，故按同一三元组匹配即可。
+ */
+export function findArcForTrade(trade: Pick<TradeDTO, 'fromNodeId' | 'toNodeId' | 'assetClass'>, arcs: ArcDTO[]): ArcDTO | undefined {
+  return arcs.find(
+    (arc) =>
+      arc.fromNodeId === trade.fromNodeId &&
+      arc.toNodeId === trade.toNodeId &&
+      arc.assetClass === trade.assetClass,
+  );
+}
+
 /** 弧线弧度：与两地距离正相关，限制在 0.18~0.55。 */
 export function arcCurveness(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const distance = Math.hypot(lon2 - lon1, lat2 - lat1);
